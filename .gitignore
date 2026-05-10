@@ -1,0 +1,8 @@
+.vscode
+.cache.
+.DS_Store
+.clang-format
+bin
+build
+renders
+assets
