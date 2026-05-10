@@ -60,18 +60,23 @@ Object makeAABB(const glm::vec3& bMin, const glm::vec3& bMax) {
     return obj;
 }
 
-Object makeOBB(const glm::vec3& center, const glm::vec3& u, const glm::vec3& v) {
+Object makeOBB(const glm::vec3& bMin, const glm::vec3& bMax, const glm::vec3& u, const glm::vec3& v) {
+    glm::vec3 nu = glm::normalize(u);
+    glm::vec3 nv = glm::normalize(v);
     Object obj;
     obj.type = OBB;
-    obj.data[0] = center.x;
-    obj.data[1] = center.y;
-    obj.data[2] = center.z;
-    obj.data[3] = u.x;
-    obj.data[4] = u.y;
-    obj.data[5] = u.z;
-    obj.data[6] = v.x;
-    obj.data[7] = v.y;
-    obj.data[8] = v.z;
+    obj.data[0] = bMin.x;
+    obj.data[1] = bMin.y;
+    obj.data[2] = bMin.z;
+    obj.data[3] = bMax.x;
+    obj.data[4] = bMax.y;
+    obj.data[5] = bMax.z;
+    obj.data[6] = nu.x;
+    obj.data[7] = nu.y;
+    obj.data[8] = nu.z;
+    obj.data[9] = nv.x;
+    obj.data[10] = nv.y;
+    obj.data[11] = nv.z;
     return obj;
 }
 
@@ -230,7 +235,83 @@ bool hitAABB(const Ray& ray, HitRecord& hit, float32 tMin, float32 tMax, const f
 }
 
 bool hitOBB(const Ray& ray, HitRecord& hit, float32 tMin, float32 tMax, const float32 data[OBJECT_DATA_SIZE]) {
-    return false; // TODO: implement OBB as well
+    glm::vec3 bMin(data[0], data[1], data[2]);
+    glm::vec3 bMax(data[3], data[4], data[5]);
+    glm::vec3 halfs = (bMax - bMin) * 0.5f;
+    glm::vec3 center = bMin + halfs;
+    glm::vec3 u = glm::vec3(data[6], data[7], data[8]);
+    glm::vec3 v = glm::vec3(data[9], data[10], data[11]);
+    glm::vec3 w = glm::cross(u, v);
+
+    glm::vec3 ro = ray.org - center;
+    glm::vec3 rd = ray.dir;
+    ro = glm::vec3(glm::dot(ro, u), glm::dot(ro, v), glm::dot(ro, w));
+    rd = glm::vec3(glm::dot(rd, u), glm::dot(rd, v), glm::dot(rd, w));
+
+    float32 winding = 1.0f;
+    float32 fx = std::fabs(ro.x) / halfs.x;
+    float32 fy = std::fabs(ro.y) / halfs.y;
+    float32 fz = std::fabs(ro.z) / halfs.z;
+    if (fx < 1.0f && fy < 1.0f && fz < 1.0f) {
+        winding = -1.0f;
+    }
+
+    float32 sgnX = -std::copysign(1.0f, rd.x);
+    float32 sgnY = -std::copysign(1.0f, rd.y);
+    float32 sgnZ = -std::copysign(1.0f, rd.z);
+
+    float32 dx = (halfs.x * winding * sgnX - ro.x) / rd.x;
+    float32 dy = (halfs.y * winding * sgnY - ro.y) / rd.y;
+    float32 dz = (halfs.z * winding * sgnZ - ro.z) / rd.z;
+
+    bool hitX = (dx >= 0.0f) & (std::fabs(ro.y + rd.y * dx) <= halfs.y) & (std::fabs(ro.z + rd.z * dx) <= halfs.z);
+    bool hitY = (dy >= 0.0f) & (std::fabs(ro.z + rd.z * dy) <= halfs.z) & (std::fabs(ro.x + rd.x * dy) <= halfs.x);
+    bool hitZ = (dz >= 0.0f) & (std::fabs(ro.x + rd.x * dz) <= halfs.x) & (std::fabs(ro.y + rd.y * dz) <= halfs.y);
+
+    if (!hitX && !hitY && !hitZ) {
+        return false;
+    }
+
+    float32 t = hitX ? dx : (hitY ? dy : dz);
+    if (t < tMin || t > tMax) {
+        return false;
+    }
+
+    glm::vec3 localN = hitX ? glm::vec3(sgnX, 0.0f, 0.0f) : (hitY ? glm::vec3(0.0f, sgnY, 0.0f) : glm::vec3(0.0f, 0.0f, sgnZ));
+
+    hit.t = t;
+    hit.p = rayAt(ray, t);
+    hit.n = u * localN.x + v * localN.y + w * localN.z;
+    hit.exit = (winding < 0.0f);
+    return true;
+}
+
+bool hitObject(const Ray& ray, HitRecord& hit, float32 tMin, float32 tMax, const Object& obj) {
+    switch (obj.type) {
+    case SPHERE: {
+        return hitSphere(ray, hit, tMin, tMax, obj.data);
+    }
+
+    case TRIANGLE: {
+        return hitTriangle(ray, hit, tMin, tMax, obj.data);
+    }
+
+    case QUAD: {
+        return hitQuad(ray, hit, tMin, tMax, obj.data);
+    }
+
+    case AABB: {
+        return hitAABB(ray, hit, tMin, tMax, obj.data);
+    }
+
+    case OBB: {
+        return hitOBB(ray, hit, tMin, tMax, obj.data);
+    }
+
+    default: {
+        return false;
+    }
+    }
 }
 
 }  // namespace core
