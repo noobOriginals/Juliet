@@ -8,9 +8,10 @@
 
 namespace core {
 
-Object makeSphere(const glm::vec3& center, float32 radius) {
+Object makeSphere(const glm::vec3& center, float32 radius, int32 materialIdx) {
     Object obj;
     obj.type = SPHERE;
+    obj.materialIdx = materialIdx;
     obj.data[0] = center.x;
     obj.data[1] = center.y;
     obj.data[2] = center.z;
@@ -18,9 +19,10 @@ Object makeSphere(const glm::vec3& center, float32 radius) {
     return obj;
 }
 
-Object makeTriangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c) {
+Object makeTriangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, int32 materialIdx) {
     Object obj;
     obj.type = TRIANGLE;
+    obj.materialIdx = materialIdx;
     obj.data[0] = a.x;
     obj.data[1] = a.y;
     obj.data[2] = a.z;
@@ -33,9 +35,10 @@ Object makeTriangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c) 
     return obj;
 }
 
-Object makeQuad(const glm::vec3& center, const glm::vec3& u, const glm::vec3& v) {
+Object makeQuad(const glm::vec3& center, const glm::vec3& u, const glm::vec3& v, int32 materialIdx) {
     Object obj;
     obj.type = QUAD;
+    obj.materialIdx = materialIdx;
     obj.data[0] = center.x;
     obj.data[1] = center.y;
     obj.data[2] = center.z;
@@ -48,9 +51,10 @@ Object makeQuad(const glm::vec3& center, const glm::vec3& u, const glm::vec3& v)
     return obj;
 }
 
-Object makeAABB(const glm::vec3& bMin, const glm::vec3& bMax) {
+Object makeAABB(const glm::vec3& bMin, const glm::vec3& bMax, int32 materialIdx) {
     Object obj;
     obj.type = AABB;
+    obj.materialIdx = materialIdx;
     obj.data[0] = bMin.x;
     obj.data[1] = bMin.y;
     obj.data[2] = bMin.z;
@@ -60,11 +64,13 @@ Object makeAABB(const glm::vec3& bMin, const glm::vec3& bMax) {
     return obj;
 }
 
-Object makeOBB(const glm::vec3& bMin, const glm::vec3& bMax, const glm::vec3& u, const glm::vec3& v) {
+Object makeOBB(const glm::vec3& bMin, const glm::vec3& bMax, const glm::vec3& u, const glm::vec3& v, int32 materialIdx) {
     glm::vec3 nu = glm::normalize(u);
-    glm::vec3 nv = glm::normalize(v);
+    glm::vec3 up = glm::cross(u, v);
+    glm::vec3 nv = glm::normalize(glm::cross(up, u));
     Object obj;
     obj.type = OBB;
+    obj.materialIdx = materialIdx;
     obj.data[0] = bMin.x;
     obj.data[1] = bMin.y;
     obj.data[2] = bMin.z;
