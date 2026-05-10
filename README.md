@@ -2,6 +2,10 @@
 
 Juliet's goal is to implement a solid path tracing engine from scratch, just like it's predecessors.  
 
+## Current scene  
+
+![scene](https://drive.google.com/uc?id=1wDH8obYCuopKQsuJ54PIH_o-0HSiHekV)
+
 ## How to run  
 
 - Clone this repo, make sure to have CMake installed.  
