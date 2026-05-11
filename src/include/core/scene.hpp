@@ -18,6 +18,8 @@ struct Scene {
     std::vector<Material> materials;
 };
 
+Scene loadSceneFromFile(const char* filepath);
+void saveSceneToFile(const char* filepath, const Scene& scene);
 void addObjectToScene(const Object& obj, Scene& scene);
 void addMaterialToScene(const Material& mat, Scene& scene);
 int32 getClosestHit(const Ray& ray, HitRecord& hit, const Scene& scene);

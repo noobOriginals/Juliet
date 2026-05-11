@@ -72,6 +72,10 @@ int main() {
     core::addMaterialToScene(core::makeMetal(vec3(0.8, 0.9, 1.0), 0.05f), scn);
     core::addMaterialToScene(core::makeMetal(vec3(1.0, 1.0, 1.0), 0.02f), scn);
 
+    core::saveSceneToFile("scenes/scene.scn", scn);
+
+    scn = core::loadSceneFromFile("scenes/scene.scn");
+
     lib::RenderParameters renderParameters;
 
     renderParameters.screenWidth = 2560;
@@ -82,7 +86,7 @@ int main() {
     renderParameters.cameraPos = vec3(-8.0f, 2.8f, 3.8f);
     renderParameters.cameraLookAt = vec3(0.0f, 0.5f, -0.5f);
 
-    renderParameters.samplesPerPixel = 1000;
+    renderParameters.samplesPerPixel = 100;
     renderParameters.maxBounces = 500;
     renderParameters.threadTileSize = 32;
 

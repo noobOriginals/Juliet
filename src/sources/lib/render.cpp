@@ -50,13 +50,23 @@ Render::Render(RenderParameters params) {
 }
 
 void Render::render() const {
-    std::cout << screenW << " x " << screenH << " / " << tileSize << " @SPP " << samplesPerPixel << "\n";
+    std::cout << "Rendering " << screenW << " x " << screenH << " / " << tileSize << " @SPP " << samplesPerPixel << "\n";
 
     if (!multiThreading) {
+        uint64 totalPixels = screenW * screenH;
+        uint64 rendered = 0;
         Pixel* pixels = (Pixel*)image.data.data();
         for (int32 y = 0; y < screenH; y++) {
             for (int32 x = 0; x < screenW; x++) {
                 pixels[y * screenW + x] = renderPixel(x, y);
+                rendered++;
+                int32 percent = rendered * 100 / totalPixels;
+                int32 fill = percent * 0.7;
+                std::printf("\r[%-50s] %3d%% (%llu/%llu pixels)", std::string(fill, '#').append(70 - fill, ' ').c_str(), percent, rendered, totalPixels);
+                std::fflush(stdout);
+                if (rendered == totalPixels) {
+                    std::printf("\n");
+                }
             }
         }
         return;
@@ -69,11 +79,10 @@ void Render::render() const {
         }
     }
 
+    const int32 totalTiles = workQueue.size();
+    std::atomic<int32> renderedTiles(0);
+
     std::mutex queueMutex;
-
-    const int32 totalTiles = ((screenW + tileSize - 1) / tileSize) * ((screenH + tileSize - 1) / tileSize);
-    std::atomic<int32> completedTiles(0);
-
     auto worker = [&]() {
         while (true) {
             Tile tile;
@@ -87,14 +96,11 @@ void Render::render() const {
             }
             renderTile(tile);
 
-            int32 done = ++completedTiles;
-            int32 pct = done * 100 / totalTiles;
-            int32 filled = pct * 0.7;
-            std::printf("\r[%-50s] %3d%% (%d/%d tiles)", std::string(filled, '#').append(70 - filled, ' ').c_str(), pct, done, totalTiles);
+            int32 rendered = ++renderedTiles;
+            int32 percent = rendered * 100 / totalTiles;
+            int32 fill = percent * 0.7;
+            std::printf("\r[%-50s] %3d%% (%d/%d tiles)", std::string(fill, '#').append(70 - fill, ' ').c_str(), percent, rendered, totalTiles);
             std::fflush(stdout);
-            if (done == totalTiles) {
-                std::printf("\n");
-            }
         }
     };
 
@@ -105,6 +111,7 @@ void Render::render() const {
     for (auto& t : threads) {
         t.join();
     }
+    std::printf("\n");
 }
 
 void Render::save(std::string filepath) const {
