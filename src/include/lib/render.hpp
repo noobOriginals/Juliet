@@ -8,11 +8,10 @@
 #include <lib/image.hpp>
 #include <glm/glm.hpp>
 #include <core/ray.hpp>
-#include <util/random.hpp>
 
 namespace lib {
 
-typedef glm::vec3 (*RenderRaytraceCallback)(const core::Ray& ray, int32 maxBounces, util::PCG32& rng);
+typedef glm::vec3 (*RenderRaytraceCallback)(const core::Ray& ray, int32 maxBounces);
 
 struct RenderParameters {
     int32 screenWidth = 800;

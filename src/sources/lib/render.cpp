@@ -1,6 +1,7 @@
 #include <lib/render.hpp>
 
 // Std includes
+#include <iostream>
 #include <cmath>
 #include <queue>
 #include <functional>
@@ -49,8 +50,16 @@ Render::Render(RenderParameters params) {
 }
 
 void Render::render() const {
-    if (!multiThreading) {
+    std::cout << screenW << " x " << screenH << " / " << tileSize << " @SPP " << samplesPerPixel << "\n";
 
+    if (!multiThreading) {
+        Pixel* pixels = (Pixel*)image.data.data();
+        for (int32 y = 0; y < screenH; y++) {
+            for (int32 x = 0; x < screenW; x++) {
+                pixels[y * screenW + x] = renderPixel(x, y);
+            }
+        }
+        return;
     }
 
     std::queue<Tile> workQueue;
@@ -61,6 +70,9 @@ void Render::render() const {
     }
 
     std::mutex queueMutex;
+
+    const int32 totalTiles = ((screenW + tileSize - 1) / tileSize) * ((screenH + tileSize - 1) / tileSize);
+    std::atomic<int32> completedTiles(0);
 
     auto worker = [&]() {
         while (true) {
@@ -74,6 +86,15 @@ void Render::render() const {
                 workQueue.pop();
             }
             renderTile(tile);
+
+            int32 done = ++completedTiles;
+            int32 pct = done * 100 / totalTiles;
+            int32 filled = pct * 0.7;
+            std::printf("\r[%-50s] %3d%% (%d/%d tiles)", std::string(filled, '#').append(70 - filled, ' ').c_str(), pct, done, totalTiles);
+            std::fflush(stdout);
+            if (done == totalTiles) {
+                std::printf("\n");
+            }
         }
     };
 
@@ -93,21 +114,20 @@ void Render::save(std::string filepath) const {
 // Render private helpers
 
 Pixel Render::renderPixel(int32 x, int32 y) const {
-    util::PCG32 rng;
     vec3 color(0.0f);
     if (!supersampling) {
         core::Ray ray;
         ray.org = camPos;
         ray.dir = normalize(pixelOrigin + pixelDeltaW * (float32)x + pixelDeltaH * (float32)y - camPos);
-        color = raytraceCallback(ray, maxBounces, rng);
+        color = raytraceCallback(ray, maxBounces);
     } else {
         vec3 pixel = pixelOrigin + pixelDeltaW * (float32)x + pixelDeltaH * (float32)y;
         for (int32 i = 0; i < samplesPerPixel; i++) {
-            vec3 jitter = pixelDeltaW * (rng.nextFloat() - 0.5f) + pixelDeltaH * (rng.nextFloat() - 0.5f);
+            vec3 jitter = pixelDeltaW * (util::randomUnit() - 0.5f) + pixelDeltaH * (util::randomUnit() - 0.5f);
             core::Ray ray;
             ray.org = camPos;
             ray.dir = normalize(pixel + jitter - camPos);
-            color += raytraceCallback(ray, maxBounces, rng);
+            color += raytraceCallback(ray, maxBounces);
         }
         color /= samplesPerPixel;
     }

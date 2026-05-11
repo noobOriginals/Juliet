@@ -8,7 +8,6 @@
 
 // Local includes
 #include <util/types.h>
-#include <util/random.hpp>
 #include <util/util.hpp>
 #include <lib/render.hpp>
 #include <core/scene.hpp>
@@ -24,14 +23,14 @@ vec3 skyColor(const core::Ray& ray) {
     return vec3(0.0f);
 }
 
-vec3 raytrace(const core::Ray& ray, int32 maxDepth, PCG32& rng) {
+vec3 raytrace(const core::Ray& ray, int32 maxDepth) {
     core::Ray r = ray;
     core::HitRecord h;
     int32 mIdx;
     vec3 color = vec3(1.0f);
     for (int32 i = 0; i < maxDepth; i++) {
         if ((mIdx = core::getClosestHit(r, h, scn)) >= 0) {
-            core::ScatterResult res = core::scatterMaterial(r, h, rng, scn.materials[mIdx]);
+            core::ScatterResult res = core::scatterMaterial(r, h, scn.materials[mIdx]);
             if (scn.materials[mIdx].type == core::EMMISIVE) {
                 color *= res.albedo;
                 return color;
@@ -85,6 +84,7 @@ int main() {
 
     renderParameters.samplesPerPixel = 1000;
     renderParameters.maxBounces = 500;
+    renderParameters.threadTileSize = 32;
 
     renderParameters.enableSupersampling = true;
     renderParameters.enableGammaCorrection = true;

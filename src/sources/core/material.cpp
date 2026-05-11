@@ -47,7 +47,7 @@ Material makeEmmisive(const glm::vec3& albedo) {
     return mat;
 }
 
-ScatterResult scatterDiffuse(const Ray& ray, const HitRecord& hit, util::PCG32& rng, const float32 data[MATERIAL_DATA_SIZE]) {
+ScatterResult scatterDiffuse(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]) {
     ScatterResult res;
     res.albedo = glm::vec3(data[0], data[1], data[2]);
     res.scattered = true;
@@ -56,7 +56,7 @@ ScatterResult scatterDiffuse(const Ray& ray, const HitRecord& hit, util::PCG32& 
     return res;
 }
 
-ScatterResult scatterMetal(const Ray& ray, const HitRecord& hit, util::PCG32& rng, const float32 data[MATERIAL_DATA_SIZE]) {
+ScatterResult scatterMetal(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]) {
     ScatterResult res;
     res.albedo = glm::vec3(data[0], data[1], data[2]);
     res.scattered = true;
@@ -65,7 +65,7 @@ ScatterResult scatterMetal(const Ray& ray, const HitRecord& hit, util::PCG32& rn
     return res;
 }
 
-ScatterResult scatterDielectric(const Ray& ray, const HitRecord& hit, util::PCG32& rng, const float32 data[MATERIAL_DATA_SIZE]) {
+ScatterResult scatterDielectric(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]) {
     ScatterResult res;
     res.albedo = glm::vec3(data[0], data[1], data[2]);
     res.scattered = true;
@@ -80,26 +80,26 @@ ScatterResult scatterDielectric(const Ray& ray, const HitRecord& hit, util::PCG3
     return res;
 }
 
-ScatterResult scatterEmmisive(const Ray& ray, const HitRecord& hit, util::PCG32& rng, const float32 data[MATERIAL_DATA_SIZE]) {
-    return scatterDiffuse(ray, hit, rng, data);
+ScatterResult scatterEmmisive(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]) {
+    return scatterDiffuse(ray, hit, data);
 }
 
-ScatterResult scatterMaterial(const Ray& ray, const HitRecord& hit, util::PCG32& rng, const Material& material) {
+ScatterResult scatterMaterial(const Ray& ray, const HitRecord& hit, const Material& material) {
     switch (material.type) {
     case DIFFUSE: {
-        return scatterDiffuse(ray, hit, rng, material.data);
+        return scatterDiffuse(ray, hit, material.data);
     }
 
     case METAL: {
-        return scatterMetal(ray, hit, rng, material.data);
+        return scatterMetal(ray, hit, material.data);
     }
 
     case DIELECTRIC: {
-        return scatterDielectric(ray, hit, rng, material.data);
+        return scatterDielectric(ray, hit, material.data);
     }
 
     case EMMISIVE: {
-        return scatterEmmisive(ray, hit, rng, material.data);
+        return scatterEmmisive(ray, hit, material.data);
     }
 
     default: {

@@ -8,7 +8,6 @@
 #include <util/types.h>
 #include <core/ray.hpp>
 #include <core/hitrecord.hpp>
-#include <util/random.hpp>
 
 namespace core {
 
@@ -37,11 +36,11 @@ struct ScatterResult {
     bool scattered;
 };
 
-ScatterResult scatterDiffuse(const Ray& ray, const HitRecord& hit, util::PCG32& rng, const float32 data[MATERIAL_DATA_SIZE]);
-ScatterResult scatterMetal(const Ray& ray, const HitRecord& hit, util::PCG32& rng, const float32 data[MATERIAL_DATA_SIZE]);
-ScatterResult scatterDielectric(const Ray& ray, const HitRecord& hit, util::PCG32& rng, const float32 data[MATERIAL_DATA_SIZE]);
-ScatterResult scatterEmmisive(const Ray& ray, const HitRecord& hit, util::PCG32& rng, const float32 data[MATERIAL_DATA_SIZE]);
-ScatterResult scatterMaterial(const Ray& ray, const HitRecord& hit, util::PCG32& rng, const Material& material);
+ScatterResult scatterDiffuse(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]);
+ScatterResult scatterMetal(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]);
+ScatterResult scatterDielectric(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]);
+ScatterResult scatterEmmisive(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]);
+ScatterResult scatterMaterial(const Ray& ray, const HitRecord& hit, const Material& material);
 
 } // namespace core
 
