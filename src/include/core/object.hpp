@@ -8,18 +8,9 @@
 #include <util/types.h>
 #include <core/ray.hpp>
 #include <core/hitrecord.hpp>
+#include <core/object_properties.hpp>
 
 namespace core {
-
-constexpr uint64 OBJECT_DATA_SIZE = 12;
-
-enum ObjectType : int32 {
-    SPHERE = 0,
-    TRIANGLE = 1,
-    QUAD = 2,
-    AABB = 3,
-    OBB = 4
-};
 
 struct Object {
     int32 type;

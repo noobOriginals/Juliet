@@ -1,5 +1,5 @@
-#ifndef RANDOM_CUH
-#define RANDOM_CUH
+#ifndef CUDA_RANDOM_CUH
+#define CUDA_RANDOM_CUH
 
 // Std includes
 #include <cuda_runtime.h>
@@ -14,27 +14,6 @@ namespace cuda {
 
 inline __device__ void initState(curandStatePhilox4_32_10* state, uint64 seed) {
     curand_init(seed, 12345, 0, state);
-}
-
-inline __global__ void initStatesKernel1D(curandStatePhilox4_32_10* states, uint64 numStates) {
-    uint64 idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < numStates) {
-        initState(&states[idx], idx);
-    }
-}
-
-inline __global__ void initStatesKernel2D(curandStatePhilox4_32_10* states, uint64 numStates) {
-    uint64 idx = (blockIdx.y * blockDim.y + threadIdx.y) * gridDim.x * blockDim.x +  blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < numStates) {
-        initState(&states[idx], idx);
-    }
-}
-
-inline __global__ void initStatesKernel3D(curandStatePhilox4_32_10* states, uint64 numStates) {
-    uint64 idx = (blockIdx.z * blockDim.z + threadIdx.z) * gridDim.x * blockDim.x * gridDim.y * blockDim.y + (blockIdx.y * blockDim.y + threadIdx.y) * gridDim.x * blockDim.x +  blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < numStates) {
-        initState(&states[idx], idx);
-    }
 }
 
 inline __device__ float32 nextFloat(curandStatePhilox4_32_10* state) {
@@ -68,4 +47,4 @@ inline __device__ vec3 randomCosineHemisphere(curandStatePhilox4_32_10* state, c
 
 } // namespace cuda
 
-#endif // RANDOM_CUH
+#endif // CUDA_RANDOM_CUH

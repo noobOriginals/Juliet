@@ -1,5 +1,5 @@
-#ifndef VEC3_CUH
-#define VEC3_CUH
+#ifndef CUDA_VEC3_CUH
+#define CUDA_VEC3_CUH
 
 // Std includes
 #include <cuda_runtime.h>
@@ -128,4 +128,4 @@ inline __device__ vec3& operator/=(vec3& v, float32 f) {
 
 } // namespace cuda
 
-#endif // VEC3_CUH
+#endif // CUDA_VEC3_CUH

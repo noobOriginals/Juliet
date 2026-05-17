@@ -8,17 +8,9 @@
 #include <util/types.h>
 #include <core/ray.hpp>
 #include <core/hitrecord.hpp>
+#include <core/material_properties.hpp>
 
 namespace core {
-
-constexpr uint64 MATERIAL_DATA_SIZE = 4;
-
-enum MaterialType : int32 {
-    DIFFUSE = 0,
-    METAL = 1,
-    DIELECTRIC = 2,
-    EMMISIVE = 3 // TODO
-};
 
 struct Material {
     int32 type;

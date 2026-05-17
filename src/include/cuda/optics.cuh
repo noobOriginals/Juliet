@@ -1,5 +1,5 @@
-#ifndef OPTICS_CUH
-#define OPTICS_CUH
+#ifndef CUDA_OPTICS_CUH
+#define CUDA_OPTICS_CUH
 
 // Std includes
 #include <cuda_runtime.h>
@@ -53,4 +53,4 @@ inline __device__ vec3 refract(curandStatePhilox4_32_10* state, const vec3& dir,
 
 } // namespace cuda
 
-#endif // OPTICS_CUH
+#endif // CUDA_OPTICS_CUH
