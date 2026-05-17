@@ -15,9 +15,7 @@ include_directories(${HeaderPath} $ENV{OPENGL_PATH})
 find_package(Threads REQUIRED)
 
 add_executable(${PROJECT_NAME} ${Sources})
-# set_property(TARGET ${PROJECT_NAME} PROPERTY CUDA_SEPARABLE_COMPILATION ON)
 set_target_properties(${PROJECT_NAME} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_compile_options(${PROJECT_NAME} PRIVATE -O3)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
-
