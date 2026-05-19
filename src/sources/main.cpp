@@ -97,7 +97,7 @@ int main() {
     renderParameters.raytraceCallback = raytrace;
 
     lib::Render render(renderParameters);
-    render.render();
+    render.render(scn);
     render.save("renders/render.png");
 
     return 0;

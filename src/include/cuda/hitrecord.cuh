@@ -1,5 +1,5 @@
 #ifndef CUDA_HITRECORD_HPP
-#define UDA_HITRECORD_HPP
+#define CUDA_HITRECORD_HPP
 
 // Std includes
 #include <cuda_runtime.h>

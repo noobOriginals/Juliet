@@ -13,9 +13,9 @@ namespace cuda {
 struct vec3 {
     float32 x, y, z;
 
-    __device__ vec3() : x(0.0f), y(0.0f), z(0.0f) {}
-    __device__ vec3(float32 f) : x(f), y(f), z(f) {}
-    __device__ vec3(float32 x, float32 y, float32 z) : x(x), y(y), z(z) {}
+    __host__ __device__ vec3() : x(0.0f), y(0.0f), z(0.0f) {}
+    __host__ __device__ vec3(float32 f) : x(f), y(f), z(f) {}
+    __host__ __device__ vec3(float32 x, float32 y, float32 z) : x(x), y(y), z(z) {}
 };
 
 // Single Vector

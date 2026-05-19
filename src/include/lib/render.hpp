@@ -8,6 +8,7 @@
 #include <lib/image.hpp>
 #include <glm/glm.hpp>
 #include <core/ray.hpp>
+#include <core/scene.hpp>
 
 namespace lib {
 
@@ -41,7 +42,7 @@ public:
     Render() = default;
     Render(RenderParameters params);
 
-    void render() const;
+    void render(const core::Scene& scene) const;
     void save(std::string filepath) const;
 
 private:

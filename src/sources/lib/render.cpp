@@ -8,15 +8,28 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <cstdlib>
+#include <cstring>
 
 // Local includes
 #include <util/util.hpp>
+#include <cuda/render_interface.hpp>
+
+cuda::interface::vec3 glmToInterface(const glm::vec3& v) {
+    return {v.x, v.y, v.z};
+}
+
+glm::vec3 interfaceToGlm(const cuda::interface::vec3& v) {
+    return glm::vec3(v.x, v.y, v.z);
+}
 
 using namespace glm;
 
 namespace lib {
 
 // Render
+
+bool cuda = true;
 
 Render::Render(RenderParameters params) {
     image = makeImage(params.screenWidth, params.screenHeight);
@@ -49,7 +62,34 @@ Render::Render(RenderParameters params) {
     pixelOrigin = camPos + dir * params.focalLength - right * width - up * height + pixelDeltaW * 0.5f + pixelDeltaH * 0.5f;
 }
 
-void Render::render() const {
+void Render::render(const core::Scene& scene) const {
+    if (cuda) {
+        cuda::interface::RenderData data;
+        data.screenW = screenW;
+        data.screenH = screenH;
+        data.camPos = glmToInterface(camPos);
+        data.pixelOrigin = glmToInterface(pixelOrigin);
+        data.pixelDeltaW = glmToInterface(pixelDeltaW);
+        data.pixelDeltaH = glmToInterface(pixelDeltaH);
+        data.maxBounces = maxBounces;
+        data.samplesPerPixel = samplesPerPixel;
+        data.objCount = scene.objects.size();
+        data.matCount = scene.materials.size();
+        data.objects = (cuda::interface::Object*)std::calloc(data.objCount, sizeof(cuda::interface::Object*));
+        data.materials = (cuda::interface::Material*)std::calloc(data.matCount, sizeof(cuda::interface::Material*));
+        std::memcpy(data.objects, scene.objects.data(), sizeof(cuda::interface::Object*) * data.objCount);
+        std::memcpy(data.materials, scene.materials.data(), sizeof(cuda::interface::Material*) * data.matCount);
+        cuda::interface::RenderReturnData retData;
+        cuda::interface::renderData(&retData, &data);
+        Pixel* pixels = (Pixel*)image.data.data();
+        for (int32 i = 0; i < retData.numPixels; i++) {
+            pixels[i] = makePixel(interfaceToGlm(retData.pixels[i]));
+        }
+        free(retData.pixels);
+        std::cout << "CUDA render successful!\n";
+        return;
+    }
+
     std::cout << "Rendering " << screenW << " x " << screenH << " / " << tileSize << " @SPP " << samplesPerPixel << "\n";
 
     if (!multiThreading) {
