@@ -41,6 +41,7 @@ struct RenderReturnData {
 };
 
 void renderData(RenderReturnData* retData, const RenderData* renderData);
+void cudaFreeMem(void* ptr);
 
 } // namespace interface
 

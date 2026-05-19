@@ -68,6 +68,10 @@ __host__ void renderData(RenderReturnData* retData, const RenderData* renderData
     cudaFree(states);
 }
 
+void cudaFreeMem(void* ptr) {
+    cudaFree(ptr);
+}
+
 } // namespace interface
 
 } // namespace cuda

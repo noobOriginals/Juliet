@@ -79,14 +79,17 @@ void Render::render(const core::Scene& scene) const {
         data.materials = (cuda::interface::Material*)std::calloc(data.matCount, sizeof(cuda::interface::Material*));
         std::memcpy(data.objects, scene.objects.data(), sizeof(cuda::interface::Object*) * data.objCount);
         std::memcpy(data.materials, scene.materials.data(), sizeof(cuda::interface::Material*) * data.matCount);
+        std::cout << "CUDA render starting!\n";
         cuda::interface::RenderReturnData retData;
         cuda::interface::renderData(&retData, &data);
+        std::cout << "CUDA render successful!\n";
         Pixel* pixels = (Pixel*)image.data.data();
-        for (int32 i = 0; i < retData.numPixels; i++) {
+        std::cout << retData.numPixels << "\n";
+        for (int32 i = 0; i < retData.numPixels - 10000; i++) {
             pixels[i] = makePixel(interfaceToGlm(retData.pixels[i]));
         }
-        free(retData.pixels);
-        std::cout << "CUDA render successful!\n";
+        cuda::interface::cudaFreeMem(retData.pixels);
+        std::cout << "CUDA render stored!\n";
         return;
     }
 

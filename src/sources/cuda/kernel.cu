@@ -63,7 +63,7 @@ __global__ void renderScene(
         }
     }
     totalColor /= samplesPerPixel;
-    pixels[idx] = totalColor;
+    pixels[idx] = vec3(0.5f);
 
     randStates[idx] = localRandState;
 }
