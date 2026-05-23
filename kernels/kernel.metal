@@ -487,8 +487,8 @@ kernel void render(
     float3 totalColor(0.0f);
 
     for (int i = 0; i < p->samplesPerPixel; i++) {
-        ulong seed = i;
-        ulong sequence = id.y * width + id.x;
+        ulong seed = hash(i);
+        ulong sequence = hash(id.y * width + id.x);
         pcgSeed(rng, seed, sequence);
         float3 jitter = p->pixelDeltaW * (nextFloat(rng) - 0.5f) + p->pixelDeltaH * (nextFloat(rng) - 0.5f);
 

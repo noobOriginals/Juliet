@@ -29,16 +29,11 @@ vec3 raytrace(const core::Scene& scene, const core::Ray& ray, int32 maxDepth) {
     for (int32 i = 0; i < maxDepth; i++) {
         if ((mIdx = core::getClosestHit(r, h, scene)) >= 0) {
             core::ScatterResult res = core::scatterMaterial(r, h, scene.materials[mIdx]);
-            if (scene.materials[mIdx].type == core::EMMISIVE) {
-                color *= res.albedo;
+            color *= res.albedo;
+            if (!res.scattered) {
                 return color;
             }
-            if (res.scattered) {
-                color *= res.albedo;
-                r = res.ray;
-            } else {
-                return vec3();
-            }
+            r = res.ray;
         } else {
             return color * skyColor(r);
         }

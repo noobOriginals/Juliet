@@ -79,7 +79,7 @@ void Render::renderScene(const core::Scene& scene) const {
         }
         return;
     #else
-        std::cerr << "GPU not available. Defaulting to CPU multithreading.";
+        std::cout << "GPU not available. Defaulting to CPU multithreading.";
     #endif
     }
 

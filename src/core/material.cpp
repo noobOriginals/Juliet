@@ -1,8 +1,5 @@
 #include <core/material.hpp>
 
-// Std includes
-#include <cmath>
-
 // Local includes
 #include <util/epsilon.h>
 #include <util/util.hpp>
@@ -61,7 +58,7 @@ ScatterResult scatterMetal(const Ray& ray, const HitRecord& hit, const float32 d
     res.albedo = glm::vec3(data[0], data[1], data[2]);
     res.scattered = true;
     res.ray.org = hit.p;
-    res.ray.dir = util::reflect(ray.dir, hit.n) + util::randomUV() * data[3];
+    res.ray.dir = glm::normalize(util::reflect(ray.dir, hit.n) + util::randomUV() * data[3]);
     return res;
 }
 
@@ -76,12 +73,15 @@ ScatterResult scatterDielectric(const Ray& ray, const HitRecord& hit, const floa
         n1 = n2;
         n2 = tmp;
     }
-    res.ray.dir = util::refract(ray.dir, hit.n, n1, n2);
+    res.ray.dir = glm::normalize(util::refract(ray.dir, hit.n, n1, n2));
     return res;
 }
 
 ScatterResult scatterEmmisive(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]) {
-    return scatterDiffuse(ray, hit, data);
+    ScatterResult res;
+    res.albedo = glm::vec3(data[0], data[1], data[2]);
+    res.scattered = false;
+    return res;
 }
 
 ScatterResult scatterMaterial(const Ray& ray, const HitRecord& hit, const Material& material) {
