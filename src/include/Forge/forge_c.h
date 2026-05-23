@@ -1,6 +1,10 @@
 #ifndef FORGE_C_H
 #define FORGE_C_H
 
+#ifndef __APPLE__
+#error "This header is only available for MacOS."
+#endif // __APPLE__
+
 #ifdef __cplusplus
 extern "C" {
 #endif

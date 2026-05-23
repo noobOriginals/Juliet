@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cmath>
 #include <queue>
-#include <functional>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -29,6 +28,7 @@ Render::Render(RenderParameters params) {
     supersampling = params.enableSupersampling;
     gammaCorrection = params.enableGammaCorrection;
     multiThreading = params.enableMultiThreading;
+    useGPU = params.useGPU;
     raytraceCallback = params.raytraceCallback;
 
     if (params.threadCount == 0) {
@@ -51,6 +51,16 @@ Render::Render(RenderParameters params) {
 
 void Render::render() const {
     std::cout << "Rendering " << screenW << " x " << screenH << " / " << tileSize << " @SPP " << samplesPerPixel << "\n";
+
+    if (useGPU) {
+    #ifdef __APPLE__
+
+        return;
+    #else
+        std::cerr << "GPU not available. Defaulting to CPU multithreading.";
+    #endif
+    }
+
 
     if (!multiThreading) {
         uint64 totalPixels = screenW * screenH;

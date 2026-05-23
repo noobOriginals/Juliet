@@ -1,4 +1,4 @@
-#import "Forge/forge-c.h"
+#import "Forge/forge_c.h"
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>

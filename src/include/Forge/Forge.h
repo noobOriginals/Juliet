@@ -1,3 +1,7 @@
+#ifndef __APPLE__
+#error "This header is only available for MacOS."
+#endif // __APPLE__
+
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 

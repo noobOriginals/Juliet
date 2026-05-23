@@ -29,6 +29,7 @@ struct RenderParameters {
     bool enableSupersampling = false;
     bool enableGammaCorrection = false;
     bool enableMultiThreading = true;
+    bool useGPU = false;
 
     // Leave at 0 for default which is the number of CPU cores available on the computer
     int32 threadCount = 0;
@@ -55,7 +56,7 @@ private:
     int32 screenW, screenH;
     glm::vec3 camPos, pixelDeltaW, pixelDeltaH, pixelOrigin;
     int32 maxBounces, samplesPerPixel, tileSize;
-    bool supersampling, gammaCorrection, multiThreading;
+    bool supersampling, gammaCorrection, multiThreading, useGPU;
     int32 threadCount;
 
     RenderRaytraceCallback raytraceCallback = nullptr;
