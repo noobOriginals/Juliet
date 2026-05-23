@@ -76,9 +76,6 @@ void Render::renderScene(const core::Scene& scene) const {
                 color = util::gammaCorrect(color);
             }
             pixels[i] = makePixel(util::clamp(color, 0.0f, 1.0f));
-            // if (pixels[i].r != pixels[i].g || pixels[i].r != pixels[i].b || pixels[i].g != pixels[i].b) {
-            //     std::cout << "Found colored pixel!\n";
-            // }
         }
         return;
     #else

@@ -45,7 +45,7 @@ std::vector<float3> GPURender::renderScene(const core::Scene& scene) {
     }
 
     FGECShader* shader = fgecCreateShader();
-    fgecShaderCompileSource(shader, kernelSrc.c_str());
+    fgecShaderCompileLibrary(shader, kernelSrc.c_str());
     fgecShaderLoadKernel(shader, "render");
 
     fgecShaderAddBuffer(shader, &params, sizeof(GPURenderParams), 0, 0);

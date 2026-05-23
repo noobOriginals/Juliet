@@ -89,7 +89,7 @@ int main() {
     renderParameters.cameraPos = vec3(-8.0f, 2.8f, 3.8f);
     renderParameters.cameraLookAt = vec3(0.0f, 0.5f, -0.5f);
 
-    renderParameters.samplesPerPixel = 100;
+    renderParameters.samplesPerPixel = 2000;
     renderParameters.maxBounces = 500;
     renderParameters.threadTileSize = 32;
 
@@ -102,7 +102,7 @@ int main() {
 
     lib::Render render(renderParameters);
     render.renderScene(scn);
-    render.save("renders/gpu-render.png");
+    render.save("renders/render.png");
 
     return 0;
 }

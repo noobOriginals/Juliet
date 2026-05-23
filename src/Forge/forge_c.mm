@@ -37,7 +37,13 @@ void fgecDestroyShader(FGECShader* shader) {
     delete shader;
 }
 
-void fgecShaderCompileSource(FGECShader* shader, const char* src) {
+void fgecShaderLoadLibrary(FGECShader* shader, const char* filepath) {
+    if (filepath) {
+        [shader->shader loadLibrary:[NSURL fileURLWithPath:[NSString stringWithUTF8String:filepath]]];
+    }
+}
+
+void fgecShaderCompileLibrary(FGECShader* shader, const char* src) {
     [shader->shader compileLibrary:[NSString stringWithUTF8String:src]];
 }
 

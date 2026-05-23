@@ -58,11 +58,11 @@ float3 randomOnHemisphere(thread PCG32& rng, thread const float3& normal) {
 }
 
 float3 randomCosineHemisphere(thread PCG32& rng, thread const float3& normal) {
-    float3 dir = normal + randomUV(rng);
-    if (dot(dir, dir) < EPSILON) {
+    float3 v = normalize(normal + randomUV(rng));
+    if (dot(v, v) == 0.0f) {
         return normal;
     }
-    return normalize(dir);
+    return v;
 }
 
 float3 diffuse(thread PCG32& rng, thread const float3& normal) {
@@ -471,20 +471,26 @@ kernel void render(
     if (id.x >= width || id.y >= height) {
         return;
     }
+
     PCG32 rng;
     float3 pixel = p->pixelOrigin + p->pixelDeltaW * id.x + p->pixelDeltaH * id.y;
+
     Ray ray;
-    ray.org = p->camPos;
-    HitRecord hit;
-    ScatterResult sres;
+
     float3 totalColor(0.0f);
+
     for (int i = 0; i < p->samplesPerPixel; i++) {
-        pcgSeed(rng, (ulong) (id.y * width + id.x) ^ ((ulong) i << 32u), 12345);
+        pcgSeed(rng, i, id.y * width + id.x);
         float3 jitter = p->pixelDeltaW * (nextFloat(rng) - 0.5f) + p->pixelDeltaH * (nextFloat(rng) - 0.5f);
-        ray.dir = normalize(pixel + jitter - ray.org);
+
+        ray.org = p->camPos;
+        ray.dir = normalize(pixel + jitter - p->camPos);
+
+        HitRecord hit;
+        ScatterResult sres;
 
         float3 color(1.0f);
-        bool terminated = false;
+
         for (int j = 0; j < p->maxBounces; j++) {
             int mIdx = -1;
             float closestT = INFINITY;
@@ -498,7 +504,6 @@ kernel void render(
 
             if (mIdx < 0) {
                 color = float3(0.0f);
-                terminated = true;
                 break;
             }
 
@@ -508,17 +513,15 @@ kernel void render(
             color *= sres.albedo;
 
             if (!sres.scattered) {
-                terminated = true;
                 break;
             }
 
             ray = sres.ray;
         }
-        if (!terminated) {
-            color = float3(0.0f);
-        }
+
         totalColor += color;
     }
-    totalColor = totalColor / (float) p->samplesPerPixel;
+
+    totalColor /= p->samplesPerPixel;
     pixels[id.y * width + id.x] = totalColor;
 }
