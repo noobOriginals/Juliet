@@ -58,11 +58,11 @@ float3 randomOnHemisphere(thread PCG32& rng, thread const float3& normal) {
 }
 
 float3 randomCosineHemisphere(thread PCG32& rng, thread const float3& normal) {
-    float3 v = normalize(normal + randomUV(rng));
-    if (dot(v, v) == 0.0f) {
+    float3 dir = normal + randomUV(rng);
+    if (dot(dir, dir) < EPSILON) {
         return normal;
     }
-    return v;
+    return normalize(dir);
 }
 
 float3 diffuse(thread PCG32& rng, thread const float3& normal) {
@@ -124,9 +124,9 @@ enum ObjectType : int {
 };
 
 struct Object {
-    thread int type;
-    thread float data[OBJECT_DATA_SIZE];
-    thread int mIdx;
+    int type;
+    float data[OBJECT_DATA_SIZE];
+    int mIdx;
 };
 
 bool hitSphere(thread const Ray& ray, thread HitRecord& hit, float tMin, float tMax, thread const float data[OBJECT_DATA_SIZE]) {
@@ -372,7 +372,7 @@ enum MaterialType : int {
 
 struct Material {
     int type;
-    thread float data[MATERIAL_DATA_SIZE];
+    float data[MATERIAL_DATA_SIZE];
 };
 
 struct ScatterResult {
@@ -451,7 +451,7 @@ ScatterResult scatterMaterial(thread PCG32& rng, thread const Ray& ray, thread c
 
 struct RenderParams {
     int screenW, screenH, samplesPerPixel, maxBounces;
-    float3 camPos, pixelOrigin, pixelDeltaW, pixelDeltaH;
+    packed_float3 camPos, pixelOrigin, pixelDeltaW, pixelDeltaH;
 };
 
 struct SceneData {
@@ -463,7 +463,7 @@ kernel void render(
                    device const Object* objects [[buffer(1)]],
                    device const Material* materials [[buffer(2)]],
                    device const SceneData* sceneData [[buffer(3)]],
-                   device float3* pixels [[buffer(4)]],
+                   device packed_float3* pixels [[buffer(4)]],
                    uint2 id [[thread_position_in_grid]]
 ) {
     uint width = (uint) p->screenW;
@@ -484,9 +484,10 @@ kernel void render(
         ray.dir = normalize(pixel + jitter - ray.org);
 
         float3 color(1.0f);
+        bool terminated = false;
         for (int j = 0; j < p->maxBounces; j++) {
             int mIdx = -1;
-            float closestT;
+            float closestT = INFINITY;
             for (ulong o = 0; o < sceneData->oCount; o++) {
                 Object obj = objects[o];
                 if (hitObject(ray, hit, 1e-4f, closestT, obj)) {
@@ -497,6 +498,7 @@ kernel void render(
 
             if (mIdx < 0) {
                 color = float3(0.0f);
+                terminated = true;
                 break;
             }
 
@@ -506,13 +508,17 @@ kernel void render(
             color *= sres.albedo;
 
             if (!sres.scattered) {
+                terminated = true;
                 break;
             }
 
             ray = sres.ray;
         }
+        if (!terminated) {
+            color = float3(0.0f);
+        }
         totalColor += color;
     }
-    totalColor /= p->samplesPerPixel;
+    totalColor = totalColor / (float) p->samplesPerPixel;
     pixels[id.y * width + id.x] = totalColor;
 }

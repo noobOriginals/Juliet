@@ -1,5 +1,4 @@
 #import "Forge/Forge.h"
-#include <Foundation/NSObjCRuntime.h>
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>

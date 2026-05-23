@@ -102,7 +102,7 @@ int main() {
 
     lib::Render render(renderParameters);
     render.renderScene(scn);
-    render.save("renders/render.png");
+    render.save("renders/gpu-render.png");
 
     return 0;
 }
