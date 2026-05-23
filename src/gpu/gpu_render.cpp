@@ -1,3 +1,5 @@
+#ifdef __APPLE__
+
 #include "gpu/gpu_render.hpp"
 
 // Std includes
@@ -86,3 +88,5 @@ std::vector<float3> GPURender::renderScene(const core::Scene& scene) {
 }
 
 } // namespace gpu
+
+#endif // __APPLE__
