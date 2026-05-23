@@ -1,5 +1,5 @@
 // Std includes
-#include <iostream>
+// #include <iostream>
 
 // Lib includes
 #include <glm/glm.hpp>
@@ -15,23 +15,21 @@
 using namespace glm;
 using namespace util;
 
-core::Scene scn;
-
 vec3 skyColor(const core::Ray& ray) {
     // float32 a = 0.5f * (ray.dir.y + 1.0f);
     // return (1.0f - a) * vec3(1.0f) + a * vec3(0.5f, 0.7f, 1.0f);
     return vec3(0.0f);
 }
 
-vec3 raytrace(const core::Ray& ray, int32 maxDepth) {
+vec3 raytrace(const core::Scene& scene, const core::Ray& ray, int32 maxDepth) {
     core::Ray r = ray;
     core::HitRecord h;
     int32 mIdx;
     vec3 color = vec3(1.0f);
     for (int32 i = 0; i < maxDepth; i++) {
-        if ((mIdx = core::getClosestHit(r, h, scn)) >= 0) {
-            core::ScatterResult res = core::scatterMaterial(r, h, scn.materials[mIdx]);
-            if (scn.materials[mIdx].type == core::EMMISIVE) {
+        if ((mIdx = core::getClosestHit(r, h, scene)) >= 0) {
+            core::ScatterResult res = core::scatterMaterial(r, h, scene.materials[mIdx]);
+            if (scene.materials[mIdx].type == core::EMMISIVE) {
                 color *= res.albedo;
                 return color;
             }
@@ -49,9 +47,11 @@ vec3 raytrace(const core::Ray& ray, int32 maxDepth) {
 }
 
 #define aabbData(r, c) c - vec3(r * 0.5f), c + vec3(r * 0.5f)
-#define obbData(r, c, rot) c - vec3(r * 0.5f), c + vec3(r * 0.5f), vec3(glm::rotate(glm::mat4(1.0f), (float32)util::degToRad(rot), vec3(0, 1, 0)) * vec4(1.0f, 0.0f, 0.0f, 1.0f)), vec3(0.0f, 1.0f, 0.0f)
+#define obbData(r, c, rot) c - vec3(r * 0.5f), c + vec3(r * 0.5f), vec3(glm::rotate(glm::mat4(1.0f), (float32) util::degToRad(rot), vec3(0, 1, 0)) * vec4(1.0f, 0.0f, 0.0f, 1.0f)), vec3(0.0f, 1.0f, 0.0f)
 
 int main() {
+    core::Scene scn;
+
     core::addObjectToScene(core::makeQuad(vec3(0.0f, -0.5f, 0.0f), vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 10.0f), 0), scn);
     core::addObjectToScene(core::makeAABB(aabbData(1.0f, vec3(-1.0f, 0.0f, -3.0f)), 3), scn);
     core::addObjectToScene(core::makeAABB(aabbData(1.0f, vec3(3.0f, 0.0f, 0.5f)), 3), scn);
@@ -75,6 +75,9 @@ int main() {
     core::saveSceneToFile("scenes/scene.scn", scn);
 
     scn = core::loadSceneFromFile("scenes/scene.scn");
+    if (!scn.isValid) {
+        return 1;
+    }
 
     lib::RenderParameters renderParameters;
 
@@ -93,11 +96,12 @@ int main() {
     renderParameters.enableSupersampling = true;
     renderParameters.enableGammaCorrection = true;
     renderParameters.enableMultiThreading = true;
+    renderParameters.useGPU = true;
 
     renderParameters.raytraceCallback = raytrace;
 
     lib::Render render(renderParameters);
-    render.render();
+    render.renderScene(scn);
     render.save("renders/render.png");
 
     return 0;

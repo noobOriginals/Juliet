@@ -38,7 +38,7 @@ void fgecDestroyShader(FGECShader* shader) {
 }
 
 void fgecShaderCompileSource(FGECShader* shader, const char* src) {
-    [shader->shader compileSource:[NSString stringWithUTF8String:src]];
+    [shader->shader compileLibrary:[NSString stringWithUTF8String:src]];
 }
 
 void fgecShaderLoadKernel(FGECShader* shader, const char* kernelName) {
@@ -49,8 +49,8 @@ const void* fgecShaderCreateOutputBuffer(FGECShader* shader, ulong size, ulong o
     return [shader->shader createOutputBuffer:size offset:offset index:index];
 }
 
-void fgecShaderAddBuffer(FGECShader* shader, const void* data, ulong size, ulong offset, ulong index) {
-    [shader->shader addBuffer:data dataSize:size offset:offset index:index];
+const void* fgecShaderAddBuffer(FGECShader* shader, const void* data, ulong size, ulong offset, ulong index) {
+    return [shader->shader addBuffer:data dataSize:size offset:offset index:index];
 }
 
 ulong fgecShaderKernelGetMaxThreadsPerGroup(FGECShader* shader, const char* kernelName) {

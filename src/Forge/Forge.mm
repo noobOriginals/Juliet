@@ -1,4 +1,5 @@
 #import "Forge/Forge.h"
+#include <Foundation/NSObjCRuntime.h>
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
@@ -44,19 +45,27 @@ static inline void logErr(NSError*_Nullable err) {
     return self;
 }
 
-- (void) compileSource: (nonnull NSString*) src compileOptions: (nonnull MTLCompileOptions*) options {
+- (void) loadLibrary: (nonnull NSURL*) url {
     NSError* err;
-    _library = [_device newLibraryWithSource:src options:options error:&err];
+    _library = [_device newLibraryWithURL:url error:&err];
     if (_library == nil) {
-        NSLog(@"FGEShader::compileSource — Failed to load shader source.");
+        NSLog(@"FGEShader::loadLibrary — Failed to load library.");
         logErr(err);
-        return;
     }
 }
 
-- (void) compileSource: (nonnull NSString*) src {
+- (void) compileLibrary: (nonnull NSString*) src compileOptions: (nonnull MTLCompileOptions*) options {
+    NSError* err;
+    _library = [_device newLibraryWithSource:src options:options error:&err];
+    if (_library == nil) {
+        NSLog(@"FGEShader::compileLibrary — Failed to compile library.");
+        logErr(err);
+    }
+}
+
+- (void) compileLibrary: (nonnull NSString*) src {
     MTLCompileOptions* options = [[MTLCompileOptions alloc] init];
-    [self compileSource:src compileOptions:options];
+    [self compileLibrary:src compileOptions:options];
 }
 
 - (void) loadKernel: (nonnull NSString*) kernelName {
@@ -84,12 +93,13 @@ static inline void logErr(NSError*_Nullable err) {
     return [buffer.buffer contents];
 }
 
-- (void) addBuffer: (nullable const void*) data dataSize: (NSUInteger) dataSize offset: (NSUInteger) offset index: (NSUInteger) index {
+- (nonnull const void*) addBuffer: (nullable const void*) data dataSize: (NSUInteger) dataSize offset: (NSUInteger) offset index: (NSUInteger) index {
     Buffer buffer = {};
     buffer.buffer = [_device newBufferWithBytes:data length:dataSize options:MTLResourceStorageModeShared];
     buffer.offset = offset;
     buffer.index = index;
     _buffers.push_back(buffer);
+    return [buffer.buffer contents];
 }
 
 - (NSUInteger) getKernelMaxThreadsPerGroup: (nonnull NSString*) kernelName {

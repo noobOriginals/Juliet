@@ -11,6 +11,10 @@
 // Local includes
 #include <util/util.hpp>
 
+#ifdef __APPLE__
+#include "gpu/gpu_render.hpp"
+#endif
+
 using namespace glm;
 
 namespace lib {
@@ -49,12 +53,30 @@ Render::Render(RenderParameters params) {
     pixelOrigin = camPos + dir * params.focalLength - right * width - up * height + pixelDeltaW * 0.5f + pixelDeltaH * 0.5f;
 }
 
-void Render::render() const {
+void Render::renderScene(const core::Scene& scene) const {
     std::cout << "Rendering " << screenW << " x " << screenH << " / " << tileSize << " @SPP " << samplesPerPixel << "\n";
 
     if (useGPU) {
     #ifdef __APPLE__
-
+        gpu::GPURenderParams gpuParams;
+        gpuParams.screenW = screenW;
+        gpuParams.screenH = screenH;
+        gpuParams.samplesPerPixel = samplesPerPixel;
+        gpuParams.maxBounces = maxBounces;
+        gpuParams.camPos = camPos;
+        gpuParams.pixelDeltaW = pixelDeltaW;
+        gpuParams.pixelDeltaH = pixelDeltaH;
+        gpuParams.pixelOrigin = pixelOrigin;
+        gpu::GPURender gpuRender(gpuParams);
+        std::vector<gpu::float3> gpuPixels = gpuRender.renderScene(scene);
+        Pixel* pixels = (Pixel*)image.data.data();
+        for (unsigned long i = 0; i < gpuPixels.size(); i++) {
+            vec3 color = gpu::float3ToVec3(gpuPixels[i]);
+            if (gammaCorrection) {
+                color = util::gammaCorrect(color);
+            }
+            pixels[i] = makePixel(util::clamp(color, 0.0f, 1.0f));
+        }
         return;
     #else
         std::cerr << "GPU not available. Defaulting to CPU multithreading.";
@@ -68,7 +90,7 @@ void Render::render() const {
         Pixel* pixels = (Pixel*)image.data.data();
         for (int32 y = 0; y < screenH; y++) {
             for (int32 x = 0; x < screenW; x++) {
-                pixels[y * screenW + x] = renderPixel(x, y);
+                pixels[y * screenW + x] = renderPixel(scene, x, y);
                 rendered++;
                 int32 percent = rendered * 100 / totalPixels;
                 int32 fill = percent * 0.7;
@@ -104,7 +126,7 @@ void Render::render() const {
                 tile = workQueue.front();
                 workQueue.pop();
             }
-            renderTile(tile);
+            renderTile(scene, tile);
 
             int32 rendered = ++renderedTiles;
             int32 percent = rendered * 100 / totalTiles;
@@ -130,13 +152,13 @@ void Render::save(std::string filepath) const {
 
 // Render private helpers
 
-Pixel Render::renderPixel(int32 x, int32 y) const {
+Pixel Render::renderPixel(const core::Scene& scene, int32 x, int32 y) const {
     vec3 color(0.0f);
     if (!supersampling) {
         core::Ray ray;
         ray.org = camPos;
         ray.dir = normalize(pixelOrigin + pixelDeltaW * (float32)x + pixelDeltaH * (float32)y - camPos);
-        color = raytraceCallback(ray, maxBounces);
+        color = raytraceCallback(scene, ray, maxBounces);
     } else {
         vec3 pixel = pixelOrigin + pixelDeltaW * (float32)x + pixelDeltaH * (float32)y;
         for (int32 i = 0; i < samplesPerPixel; i++) {
@@ -144,7 +166,7 @@ Pixel Render::renderPixel(int32 x, int32 y) const {
             core::Ray ray;
             ray.org = camPos;
             ray.dir = normalize(pixel + jitter - camPos);
-            color += raytraceCallback(ray, maxBounces);
+            color += raytraceCallback(scene, ray, maxBounces);
         }
         color /= samplesPerPixel;
     }
@@ -154,11 +176,11 @@ Pixel Render::renderPixel(int32 x, int32 y) const {
     return makePixel(util::clamp(color, 0.0f, 1.0f));
 }
 
-void Render::renderTile(Tile t) const {
+void Render::renderTile(const core::Scene& scene, Tile t) const {
     Pixel* pixels = (Pixel*)image.data.data();
     for (int32 y = t.y0; y < t.y1; y++) {
         for (int32 x = t.x0; x < t.x1; x++) {
-            pixels[y * screenW + x] = renderPixel(x, y);
+            pixels[y * screenW + x] = renderPixel(scene, x, y);
         }
     }
 }

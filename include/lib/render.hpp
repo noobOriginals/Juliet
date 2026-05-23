@@ -8,10 +8,11 @@
 #include <lib/image.hpp>
 #include <glm/glm.hpp>
 #include <core/ray.hpp>
+#include <core/scene.hpp>
 
 namespace lib {
 
-typedef glm::vec3 (*RenderRaytraceCallback)(const core::Ray& ray, int32 maxBounces);
+typedef glm::vec3 (*RenderRaytraceCallback)(const core::Scene& scene, const core::Ray& ray, int32 maxBounces);
 
 struct RenderParameters {
     int32 screenWidth = 800;
@@ -24,7 +25,7 @@ struct RenderParameters {
     glm::vec3 worldUp;
 
     int32 maxBounces = 10;
-    int32 samplesPerPixel = 0;
+    int32 samplesPerPixel = 1;
     int32 threadTileSize = 100;
     bool enableSupersampling = false;
     bool enableGammaCorrection = false;
@@ -42,7 +43,7 @@ public:
     Render() = default;
     Render(RenderParameters params);
 
-    void render() const;
+    void renderScene(const core::Scene& scene) const;
     void save(std::string filepath) const;
 
 private:
@@ -50,8 +51,8 @@ private:
         int32 x0, y0, x1, y1;
     };
 
-    Pixel renderPixel(int32 x, int32 y) const;
-    void renderTile(Tile t) const;
+    Pixel renderPixel(const core::Scene& scene, int32 x, int32 y) const;
+    void renderTile(const core::Scene& scene, Tile t) const;
 
     int32 screenW, screenH;
     glm::vec3 camPos, pixelDeltaW, pixelDeltaH, pixelOrigin;

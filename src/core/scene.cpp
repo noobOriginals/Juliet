@@ -9,8 +9,8 @@
 #include <iostream>
 #include <limits>
 
-#define tryreadReturnVoid(x) if (!(x)) { std::cout << "Read failed\n"; return; }
-#define tryreadReturnX(x, ret) if (!(x)) { std::cout << "Read failed\n"; return ret; }
+#define tryreadReturnVoid(x) if (!(x)) { std::cerr << "Read failed\n"; return; }
+#define tryreadReturnX(x, ret) if (!(x)) { std::cerr << "Read failed\n"; return ret; }
 
 namespace core {
 
@@ -37,9 +37,13 @@ std::string toString(const Material& mat) {
 }
 
 Scene loadSceneFromFile(const char* filepath) {
-    Scene scene;
+    Scene scene = {};
     std::cout << "Loading scene from \"" << filepath << "\"...\n";
     std::fstream file(filepath, std::ios::in);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open \"" << filepath << "\"!\n";
+        return scene;
+    }
     std::string type;
     while ((file >> type)) {
         for (int32 i = 0; i < sizeof(OBJECT_NAMES) / sizeof(const char*); i++) {
@@ -47,9 +51,9 @@ Scene loadSceneFromFile(const char* filepath) {
                 Object obj;
                 obj.type = i;
                 for (int32 j = 0; j < OBJECT_DATA_SIZE; j++) {
-                    tryreadReturnX(file >> obj.data[j], Scene())
+                    tryreadReturnX(file >> obj.data[j], scene)
                 }
-                tryreadReturnX(file >> i, Scene())
+                tryreadReturnX(file >> i, scene)
                 obj.materialIdx = i;
                 scene.objects.push_back(obj);
                 break;
@@ -60,7 +64,7 @@ Scene loadSceneFromFile(const char* filepath) {
                 Material mat;
                 mat.type = i;
                 for (int32 j = 0; j < MATERIAL_DATA_SIZE; j++) {
-                    tryreadReturnX(file >> mat.data[j], Scene())
+                    tryreadReturnX(file >> mat.data[j], scene)
                 }
                 scene.materials.push_back(mat);
                 break;
@@ -68,6 +72,7 @@ Scene loadSceneFromFile(const char* filepath) {
         }
     }
     file.close();
+    scene.isValid = true;
     std::cout << "Loaded!\n";
     return scene;
 }

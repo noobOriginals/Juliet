@@ -14,6 +14,7 @@
 namespace core {
 
 struct Scene {
+    bool isValid = false;
     std::vector<Object> objects;
     std::vector<Material> materials;
 };

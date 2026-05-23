@@ -35,7 +35,7 @@ void fgecDestroyShader(FGECShader* shader);
 void fgecShaderCompileSource(FGECShader* shader, const char* src);
 void fgecShaderLoadKernel(FGECShader* shader, const char* kernelName);
 const void* fgecShaderCreateOutputBuffer(FGECShader* shader, ulong size, ulong offset, ulong index);
-void fgecShaderAddBuffer(FGECShader* shader, const void* data, ulong size, ulong offset, ulong index);
+const void* fgecShaderAddBuffer(FGECShader* shader, const void* data, ulong size, ulong offset, ulong index);
 ulong fgecShaderKernelGetMaxThreadsPerGroup(FGECShader* shader, const char* kernelName);
 void fgecShaderSetGroupSize(FGECShader* shader, FGECSize groupSize);
 void fgecShaderSetGridSize(FGECShader* shader, FGECSize gridSize);
