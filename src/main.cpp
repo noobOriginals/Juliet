@@ -45,47 +45,23 @@ vec3 raytrace(const core::Scene& scene, const core::Ray& ray, int32 maxDepth) {
 #define obbData(r, c, rot) c - vec3(r * 0.5f), c + vec3(r * 0.5f), vec3(glm::rotate(glm::mat4(1.0f), (float32) util::degToRad(rot), vec3(0, 1, 0)) * vec4(1.0f, 0.0f, 0.0f, 1.0f)), vec3(0.0f, 1.0f, 0.0f)
 
 int main() {
-    core::Scene scn;
-
-    core::addObjectToScene(core::makeQuad(vec3(0.0f, -0.5f, 0.0f), vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 10.0f), 0), scn);
-    core::addObjectToScene(core::makeAABB(aabbData(1.0f, vec3(-1.0f, 0.0f, -3.0f)), 3), scn);
-    core::addObjectToScene(core::makeAABB(aabbData(1.0f, vec3(3.0f, 0.0f, 0.5f)), 3), scn);
-    core::addObjectToScene(core::makeOBB(obbData(1.0f, vec3(2.0f, 0.0f, -2.5f), 45.0f), 3), scn);
-    core::addObjectToScene(core::makeOBB(obbData(1.0f, vec3(0.5f, 2.0f, 0.75f), 15.0f), 3), scn);
-    core::addObjectToScene(core::makeSphere(vec3(0.5f, 0.0f, -0.5f), 0.5f, 1), scn);
-    core::addObjectToScene(core::makeSphere(vec3(-0.5f, 0.0f, 0.5f), 0.5f, 2), scn);
-    core::addObjectToScene(core::makeOBB(vec3(-1.5f, -0.5f, -1.5f), vec3(-0.5f, 0.5f, -0.5f), vec3(1.0f, 0.0f, -0.2f), vec3(0.0f, 1.0f, 0.0f), 4), scn);
-    core::addObjectToScene(core::makeOBB(obbData(1.0f, vec3(0.7f, 0.0f, 1.1f), -15.0f), 5), scn);
-    core::addObjectToScene(core::makeQuad(vec3(0.0f, 4.5f, -5.0f), vec3(10.0f, 0.0f, 0.0f), vec3(0.0f, -10.0f, 0.0f), 6), scn);
-    core::addObjectToScene(core::makeQuad(vec3(5.0f, 4.5f, 0.0f), vec3(0.0f, 0.0f, 10.0f), vec3(0.0f, -10.0f, 0.0f), 6), scn);
-
-    core::addMaterialToScene(core::makeDiffuse(vec3(0.196f, 0.541f, 0.0f)), scn);
-    core::addMaterialToScene(core::makeDiffuse(vec3(0.922f, 0.561f, 0.082f)), scn);
-    core::addMaterialToScene(core::makeDielectric(vec3(0.9f, 0.9f, 0.9f), 1.5f), scn);
-    core::addMaterialToScene(core::makeEmmisive(vec3(0.9f, 0.9f, 0.9f)), scn);
-    core::addMaterialToScene(core::makeDielectric(vec3(0.871, 1, 0.467), 1.5f), scn);
-    core::addMaterialToScene(core::makeMetal(vec3(0.8, 0.9, 1.0), 0.05f), scn);
-    core::addMaterialToScene(core::makeMetal(vec3(1.0, 1.0, 1.0), 0.02f), scn);
-
-    core::saveSceneToFile("scenes/scene.scn", scn);
-
-    scn = core::loadSceneFromFile("scenes/scene.scn");
+    core::Scene scn = core::loadSceneFromFile("scenes/cornell.scn");
     if (!scn.isValid) {
         return 1;
     }
 
     lib::RenderParameters renderParameters;
 
-    renderParameters.screenWidth = 2560;
+    renderParameters.screenWidth = 1440;
     renderParameters.screenHeight = 1440;
-    renderParameters.vfov = 32.0f;
+    renderParameters.vfov = 25.0f;
 
     renderParameters.worldUp = vec3(0, 1, 0);
-    renderParameters.cameraPos = vec3(-8.0f, 2.8f, 3.8f);
-    renderParameters.cameraLookAt = vec3(0.0f, 0.5f, -0.5f);
+    renderParameters.cameraPos = vec3(0.0f, 0.0f, 30.0f);
+    renderParameters.cameraLookAt = vec3(0.0f, 0.0f, 0.0f);
 
     renderParameters.samplesPerPixel = 10000;
-    renderParameters.maxBounces = 500;
+    renderParameters.maxBounces = 50;
     renderParameters.threadTileSize = 32;
 
     renderParameters.enableSupersampling = true;

@@ -17,7 +17,7 @@ enum MaterialType : int32 {
     DIFFUSE = 0,
     METAL = 1,
     DIELECTRIC = 2,
-    EMMISIVE = 3 // TODO
+    EMISSIVE = 3
 };
 
 struct Material {
@@ -28,7 +28,7 @@ struct Material {
 Material makeDiffuse(const glm::vec3& albedo);
 Material makeMetal(const glm::vec3& albedo, float32 fuzz);
 Material makeDielectric(const glm::vec3& albedo, float32 refIdx);
-Material makeEmmisive(const glm::vec3& albedo);
+Material makeEmissive(const glm::vec3& albedo);
 
 struct ScatterResult {
     Ray ray;
@@ -39,7 +39,7 @@ struct ScatterResult {
 ScatterResult scatterDiffuse(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]);
 ScatterResult scatterMetal(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]);
 ScatterResult scatterDielectric(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]);
-ScatterResult scatterEmmisive(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]);
+ScatterResult scatterEmissive(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]);
 ScatterResult scatterMaterial(const Ray& ray, const HitRecord& hit, const Material& material);
 
 } // namespace core

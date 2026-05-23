@@ -15,7 +15,7 @@
 namespace core {
 
 const char constexpr* OBJECT_NAMES[] = {"SPHERE", "TRIANGLE", "QUAD", "AABB", "OBB"};
-const char constexpr* MATERIAL_NAMES[] = {"DIFFUSE", "METAL", "DIELECTRIC", "EMMISIVE"};
+const char constexpr* MATERIAL_NAMES[] = {"DIFFUSE", "METAL", "DIELECTRIC", "EMISSIVE"};
 
 std::string toString(const Object& obj) {
     std::string str;

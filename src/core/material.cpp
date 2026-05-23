@@ -35,9 +35,9 @@ Material makeDielectric(const glm::vec3& albedo, float32 refIdx) {
     return mat;
 }
 
-Material makeEmmisive(const glm::vec3& albedo) {
+Material makeEmissive(const glm::vec3& albedo) {
     Material mat;
-    mat.type = EMMISIVE;
+    mat.type = EMISSIVE;
     mat.data[0] = albedo.x;
     mat.data[1] = albedo.y;
     mat.data[2] = albedo.z;
@@ -77,7 +77,7 @@ ScatterResult scatterDielectric(const Ray& ray, const HitRecord& hit, const floa
     return res;
 }
 
-ScatterResult scatterEmmisive(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]) {
+ScatterResult scatterEmissive(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]) {
     ScatterResult res;
     res.albedo = glm::vec3(data[0], data[1], data[2]);
     res.scattered = false;
@@ -98,8 +98,8 @@ ScatterResult scatterMaterial(const Ray& ray, const HitRecord& hit, const Materi
         return scatterDielectric(ray, hit, material.data);
     }
 
-    case EMMISIVE: {
-        return scatterEmmisive(ray, hit, material.data);
+    case EMISSIVE: {
+        return scatterEmissive(ray, hit, material.data);
     }
 
     default: {
