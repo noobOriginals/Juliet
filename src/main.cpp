@@ -24,21 +24,37 @@ vec3 skyColor(const core::Ray& ray) {
 vec3 raytrace(const core::Scene& scene, const core::Ray& ray, int32 maxDepth) {
     core::Ray r = ray;
     core::HitRecord h;
-    int32 mIdx;
-    vec3 color = vec3(1.0f);
+
+    int32 midx;
+    core::ScatterResult sres;
+
+    vec3 throughput(1.0f);
+    vec3 radiance(0.0f);
+
     for (int32 i = 0; i < maxDepth; i++) {
-        if ((mIdx = core::getClosestHit(r, h, scene)) >= 0) {
-            core::ScatterResult res = core::scatterMaterial(r, h, scene.materials[mIdx]);
-            color *= res.albedo;
-            if (!res.scattered) {
-                return color;
-            }
-            r = res.ray;
-        } else {
-            return color * skyColor(r);
+        midx = core::getClosestHit(r, h, scene);
+
+        if (midx < 0) {
+            break;
         }
+
+        vec3 emission(0.0f);
+        sres = core::scatterMaterial(r, h, scene.materials[midx]);
+        if (scene.materials[midx].type == core::EMISSIVE) {
+            emission = sres.albedo;
+        }
+
+        if (!sres.scattered) {
+            break;
+        }
+
+        throughput *= sres.albedo;
+        radiance += emission * throughput;
+
+        r = sres.ray;
     }
-    return vec3();
+
+    return radiance;
 }
 
 #define aabbData(r, c) c - vec3(r * 0.5f), c + vec3(r * 0.5f)
@@ -60,7 +76,7 @@ int main() {
     renderParameters.cameraPos = vec3(0.0f, 0.0f, 30.0f);
     renderParameters.cameraLookAt = vec3(0.0f, 0.0f, 0.0f);
 
-    renderParameters.samplesPerPixel = 10000;
+    renderParameters.samplesPerPixel = 1000;
     renderParameters.maxBounces = 50;
     renderParameters.threadTileSize = 32;
 

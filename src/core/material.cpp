@@ -78,10 +78,7 @@ ScatterResult scatterDielectric(const Ray& ray, const HitRecord& hit, const floa
 }
 
 ScatterResult scatterEmissive(const Ray& ray, const HitRecord& hit, const float32 data[MATERIAL_DATA_SIZE]) {
-    ScatterResult res;
-    res.albedo = glm::vec3(data[0], data[1], data[2]);
-    res.scattered = false;
-    return res;
+    return scatterDiffuse(ray, hit, data);
 }
 
 ScatterResult scatterMaterial(const Ray& ray, const HitRecord& hit, const Material& material) {
