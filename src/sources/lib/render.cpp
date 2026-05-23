@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cmath>
 #include <queue>
-#include <functional>
 #include <mutex>
 #include <thread>
 #include <vector>
