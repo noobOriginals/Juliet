@@ -24,12 +24,19 @@ uint pcg32(thread PCG32& rng) {
     return (xorshift >> rotation) | (xorshift << ((32u - rotation) & 31u));
 }
 
-void pcgSeed(thread PCG32& rng, ulong seed, ulong seq) {
+void pcgSeed(thread PCG32& rng, ulong seed, ulong sequence) {
     rng.state = 0ul;
-    rng.inc = (seq << 1u) | 1u;
+    rng.inc = (sequence << 1u) | 1u;
     pcg32(rng);
     rng.state += seed;
     pcg32(rng);
+}
+
+ulong hash(ulong x) {
+    x += 0x9E3779B97F4A7C15ul;
+    x = (x ^ (x >> 30)) * 0xBF58476D1CE4E5B9ul;
+    x = (x ^ (x >> 27)) * 0x94D049BB133111EBul;
+    return x ^ (x >> 31);
 }
 
 float nextFloat(thread PCG32& rng) {
@@ -480,7 +487,9 @@ kernel void render(
     float3 totalColor(0.0f);
 
     for (int i = 0; i < p->samplesPerPixel; i++) {
-        pcgSeed(rng, i, id.y * width + id.x);
+        ulong seed = i;
+        ulong sequence = id.y * width + id.x;
+        pcgSeed(rng, seed, sequence);
         float3 jitter = p->pixelDeltaW * (nextFloat(rng) - 0.5f) + p->pixelDeltaH * (nextFloat(rng) - 0.5f);
 
         ray.org = p->camPos;

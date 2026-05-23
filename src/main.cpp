@@ -89,7 +89,7 @@ int main() {
     renderParameters.cameraPos = vec3(-8.0f, 2.8f, 3.8f);
     renderParameters.cameraLookAt = vec3(0.0f, 0.5f, -0.5f);
 
-    renderParameters.samplesPerPixel = 2000;
+    renderParameters.samplesPerPixel = 10000;
     renderParameters.maxBounces = 500;
     renderParameters.threadTileSize = 32;
 
