@@ -5,8 +5,8 @@
 #include <glm/glm.hpp>
 
 // Local includes
-#include <util/types.h>
-#include <core/ray.hpp>
+#include "util/types.h"
+#include "core/ray.hpp"
 
 namespace core {
 
@@ -17,7 +17,7 @@ struct HitRecord {
 };
 
 inline void setHitNormal(HitRecord& hr, const Ray& r, const glm::vec3& normal) {
-    if (glm::dot(r.dir, normal) > 0) {
+    if (glm::dot(r.dir, normal) > 0.0f) {
         hr.n = -normal;
         hr.exit = true;
     } else {
