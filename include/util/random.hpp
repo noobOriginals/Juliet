@@ -63,8 +63,7 @@ inline glm::vec3 randomOnHemisphere(PCG32& rng, const glm::vec3& normal) {
 }
 
 inline glm::vec3 randomCosineHemisphere(PCG32& rng, const glm::vec3& normal) {
-    glm::vec3 v = glm::normalize(normal + randomUV(rng));
-    return v;
+    return glm::normalize(normal + randomUV(rng));
 }
 
 }

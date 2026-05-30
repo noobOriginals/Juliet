@@ -12,6 +12,7 @@
 
 // Local includes
 #include "util/types.h"
+#include "util/random.hpp"
 #include "core/material.hpp"
 #include "core/cpu/ray.hpp"
 #include "core/cpu/hitrecord.hpp"
@@ -28,13 +29,13 @@ void makeEmissiveDielectric(float32 data[MATERIAL_DATA_SIZE], const glm::vec3 al
 struct ScatterResult {
     Ray ray;
     glm::vec3 albedo, emission;
-    bool valid;
+    bool valid = false;
 };
 
-ScatterResult scatterDiffuse(float32 data[MATERIAL_DATA_SIZE], const Ray& ray, const HitRecord& hit);
-ScatterResult scatterMetal(float32 data[MATERIAL_DATA_SIZE], const Ray& ray, const HitRecord& hit);
-ScatterResult scatterDielectric(float32 data[MATERIAL_DATA_SIZE], const Ray& ray, const HitRecord& hit);
-ScatterResult scatterMaterial(int32 type, float32 data[MATERIAL_DATA_SIZE], const Ray& ray, const HitRecord& hit);
+ScatterResult scatterDiffuse(float32 data[MATERIAL_DATA_SIZE], util::PCG32& rng, const Ray& ray, const HitRecord& hit);
+ScatterResult scatterMetal(float32 data[MATERIAL_DATA_SIZE], util::PCG32& rng, const Ray& ray, const HitRecord& hit);
+ScatterResult scatterDielectric(float32 data[MATERIAL_DATA_SIZE], util::PCG32& rng, const Ray& ray, const HitRecord& hit);
+ScatterResult scatterMaterial(int32 type, float32 data[MATERIAL_DATA_SIZE], util::PCG32& rng, const Ray& ray, const HitRecord& hit);
 
 } // namespace core
 
