@@ -1,12 +1,18 @@
 #ifndef CORE_HITRECORD_HPP
 #define CORE_HITRECORD_HPP
 
+#ifndef HITRECORD
+#define HITRECORD
+#else
+#error HITRECORD already defined! Cannot include use two different backends at the same time!
+#endif // HITRECORD
+
 // Lib includes
 #include <glm/glm.hpp>
 
 // Local includes
 #include "util/types.h"
-#include "core/ray.hpp"
+#include "core/cpu/ray.hpp"
 
 namespace core {
 
