@@ -2,6 +2,8 @@
 // #include <iostream>
 
 // Lib includes
+#include "core/material.hpp"
+#include "core/object.hpp"
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -63,6 +65,7 @@ vec3 raytrace(const core::Scene& scene, const core::Ray& ray, int32 maxDepth) {
 
 int main() {
     core::Scene scn = core::loadSceneFromFile("scenes/cornell.scn");
+
     if (!scn.isValid) {
         return 1;
     }

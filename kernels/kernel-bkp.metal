@@ -526,8 +526,8 @@ kernel void render(
                 emission = sres.albedo;
             }
 
-            throughput *= sres.albedo;
             radiance += emission * throughput;
+            throughput *= sres.albedo;
 
             ray = sres.ray;
         }

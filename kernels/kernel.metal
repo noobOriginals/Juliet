@@ -87,11 +87,16 @@ float reflectance(float cos, float n1, float n2) {
 }
 
 float3 refract(thread PCG32& rng, thread const float3& dir, thread const float3& normal, float n1, float n2) {
-    float cos = dot(-dir, normal);
-    float sin = sqrt(max(0.0f, 1.0f - cos * cos));
+    float cos = max(0.0f, -dot(dir, normal));
     float idx = n1 / n2;
-    if (sin * idx > 1.0f || reflectance(cos, n1, n2) > nextFloat(rng)) {
-        return dir + 2.0f * cos * normal;
+    float r = 0.0f;
+    if ((1.0f - cos * cos) * idx * idx > 1.0f) {
+        r = 1.0f;
+    } else {
+        r = reflectance(cos, n1, n2);
+    }
+    if (r > nextFloat(rng)) {
+        return reflect(rng, dir, normal);
     }
     float3 perp = idx * (dir + cos * normal);
     float3 para = -sqrt(fabs(1.0f - dot(perp, perp))) * normal;
@@ -392,8 +397,8 @@ ScatterResult scatterDiffuse(thread PCG32& rng, thread const Ray& ray, thread co
     ScatterResult res;
     res.albedo = float3(data[0], data[1], data[2]);
     res.scattered = true;
-    res.ray.org = hit.p;
     res.ray.dir = normalize(diffuse(rng, hit.n));
+    res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }
 
@@ -401,8 +406,8 @@ ScatterResult scatterMetal(thread PCG32& rng, thread const Ray& ray, thread cons
     ScatterResult res;
     res.albedo = float3(data[0], data[1], data[2]);
     res.scattered = true;
-    res.ray.org = hit.p;
     res.ray.dir = normalize(reflect(rng, ray.dir, hit.n) + randomUV(rng) * data[3]);
+    res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }
 
@@ -410,7 +415,6 @@ ScatterResult scatterDielectric(thread PCG32& rng, thread const Ray& ray, thread
     ScatterResult res;
     res.albedo = float3(data[0], data[1], data[2]);
     res.scattered = true;
-    res.ray.org = hit.p;
     float n1 = 1.0f, n2 = data[3];
     if (hit.exit) {
         float tmp = n1;
@@ -418,6 +422,7 @@ ScatterResult scatterDielectric(thread PCG32& rng, thread const Ray& ray, thread
         n2 = tmp;
     }
     res.ray.dir = normalize(refract(rng, ray.dir, hit.n, n1, n2));
+    res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }
 
@@ -526,8 +531,8 @@ kernel void render(
                 emission = sres.albedo;
             }
 
-            throughput *= sres.albedo;
             radiance += emission * throughput;
+            throughput *= sres.albedo;
 
             ray = sres.ray;
         }
