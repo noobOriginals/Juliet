@@ -13,11 +13,13 @@
 namespace lib {
 
 struct Pixel {
-    uint8 r, g, b;
+    uint8 r, g, b, a;
 };
 
 Pixel makePixel(uint8 r, uint8 g, uint8 b);
+Pixel makePixel(uint8 r, uint8 g, uint8 b, uint8 a);
 Pixel makePixel(const glm::vec3& v);
+Pixel makePixel(const glm::vec4& v);
 
 struct Image {
     int32 width, height;

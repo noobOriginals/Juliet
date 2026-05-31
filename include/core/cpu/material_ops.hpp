@@ -4,7 +4,7 @@
 #ifndef MATERIAL_OPS
 #define MATERIAL_OPS
 #else
-#error MATERIAL_OPS already defined! Cannot include use two different backends at the same time!
+#error MATERIAL_OPS already defined! Cannot use two different backends at the same time!
 #endif // MATERIAL_OPS
 
 // Lib includes
@@ -19,23 +19,19 @@
 
 namespace core {
 
-void makeDiffuse(float32 data[MATERIAL_DATA_SIZE], const glm::vec3 albedo);
-void makeMetal(float32 data[MATERIAL_DATA_SIZE], const glm::vec3 albedo, float32 fuzz);
-void makeDielectric(float32 data[MATERIAL_DATA_SIZE], const glm::vec3 albedo, float32 refIdx);
-void makeEmissiveDiffuse(float32 data[MATERIAL_DATA_SIZE], const glm::vec3 albedo, const glm::vec3 emission);
-void makeEmissiveMetal(float32 data[MATERIAL_DATA_SIZE], const glm::vec3 albedo, float32 fuzz, const glm::vec3 emission);
-void makeEmissiveDielectric(float32 data[MATERIAL_DATA_SIZE], const glm::vec3 albedo, float32 refIdx, const glm::vec3 emission);
+void makeMaterial(float32 data[MATERIAL_DATA_SIZE], const glm::vec3& albedo, const glm::vec3& emission, float32 fuzz, float32 refIdx);
 
-struct ScatterResult {
-    Ray ray;
-    glm::vec3 albedo, emission;
+struct BSDFSample {
+    glm::vec3 wi;
+    glm::vec3 weight;
+    float32 pdf;
+    bool delta = false;
     bool valid = false;
 };
 
-ScatterResult scatterDiffuse(float32 data[MATERIAL_DATA_SIZE], util::PCG32& rng, const Ray& ray, const HitRecord& hit);
-ScatterResult scatterMetal(float32 data[MATERIAL_DATA_SIZE], util::PCG32& rng, const Ray& ray, const HitRecord& hit);
-ScatterResult scatterDielectric(float32 data[MATERIAL_DATA_SIZE], util::PCG32& rng, const Ray& ray, const HitRecord& hit);
-ScatterResult scatterMaterial(int32 type, float32 data[MATERIAL_DATA_SIZE], util::PCG32& rng, const Ray& ray, const HitRecord& hit);
+glm::vec3 evalMaterial(int32 type, const float32 data[MATERIAL_DATA_SIZE], const glm::vec3& wi, const glm::vec3& wo, const HitRecord& hit);
+float32 pdfMaterial(int32 type, const glm::vec3& wi, const glm::vec3& wo, const HitRecord& hit);
+BSDFSample sampleMaterial(int32 type, util::PCG32& rng, const glm::vec3& wo, const HitRecord& hit);
 
 } // namespace core
 

@@ -1,7 +1,7 @@
 #include <lib/image.hpp>
 
 // Lib includes
-#include <stb_image/stb_image_write.h>
+#include <stb/stb_image_write.h>
 
 namespace lib {
 
@@ -10,6 +10,16 @@ Pixel makePixel(uint8 r, uint8 g, uint8 b) {
     p.r = r;
     p.g = g;
     p.b = b;
+    p.a = 255;
+    return p;
+}
+
+Pixel makePixel(uint8 r, uint8 g, uint8 b, uint8 a) {
+    Pixel p;
+    p.r = r;
+    p.g = g;
+    p.b = b;
+    p.a = a;
     return p;
 }
 
@@ -18,6 +28,16 @@ Pixel makePixel(const glm::vec3& v) {
     p.r = v.x * 255;
     p.g = v.y * 255;
     p.b = v.z * 255;
+    p.a = 255;
+    return p;
+}
+
+Pixel makePixel(const glm::vec4& v) {
+    Pixel p;
+    p.r = v.x * 255;
+    p.g = v.y * 255;
+    p.b = v.z * 255;
+    p.a = v.w * 255;
     return p;
 }
 
@@ -31,7 +51,7 @@ Image makeImage(int32 width, int32 height) {
 
 void saveImage(const char* filepath, const Image& img) {
     stbi_flip_vertically_on_write(true);
-    stbi_write_png(filepath, img.width, img.height, 3, img.data.data(), img.width * 3);
+    stbi_write_png(filepath, img.width, img.height, 4, img.data.data(), img.width * 4);
 }
 
 } // namespace lib

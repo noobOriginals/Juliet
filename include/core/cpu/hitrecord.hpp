@@ -4,7 +4,7 @@
 #ifndef HITRECORD
 #define HITRECORD
 #else
-#error HITRECORD already defined! Cannot include use two different backends at the same time!
+#error HITRECORD already defined! Cannot use two different backends at the same time!
 #endif // HITRECORD
 
 // Lib includes
