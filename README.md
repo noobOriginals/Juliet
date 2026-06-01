@@ -4,7 +4,7 @@ Juliet's goal is to implement a solid path tracing engine from scratch, just lik
 
 ## Current scene  
 
-![scene](https://drive.google.com/uc?id=1chJ7geBGDhdNhvTAULrGgsMv34o8BgIc)
+![scene](https://drive.google.com/uc?id=1w8mDwf5t47fbVx5kJdOC2GnBQVxWSyjc)
 
 ## How to run  
 
