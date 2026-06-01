@@ -2,7 +2,7 @@
 #define UTIL_UTIL_HPP
 
 // Std includes
-#include <random>
+#include <cmath>
 
 // Lib includes
 #include <glm/glm.hpp>
@@ -10,7 +10,8 @@
 // Local includes
 #include "util/types.h"
 
-#define UTIL_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286
+constexpr float64 UTIL_PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
+constexpr float64 UTIL_INV_PI = 1.0 / UTIL_PI;
 
 namespace util {
 
@@ -58,6 +59,10 @@ inline float clamp(float val, float min, float max) {
 
 inline glm::vec3 clamp(const glm::vec3& vec, float min, float max) {
     return glm::vec3(clamp(vec.x, min, max), clamp(vec.y, min, max), clamp(vec.z, min, max));
+}
+
+inline glm::vec3 exp(const glm::vec3& vec) {
+    return glm::vec3(std::exp(vec.x), std::exp(vec.y), std::exp(vec.z));
 }
 
 } // namespace util

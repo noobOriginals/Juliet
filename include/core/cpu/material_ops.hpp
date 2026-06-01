@@ -14,24 +14,20 @@
 #include "util/types.h"
 #include "util/random.hpp"
 #include "core/material.hpp"
-#include "core/cpu/ray.hpp"
 #include "core/cpu/hitrecord.hpp"
 
 namespace core {
 
-void makeMaterial(float32 data[MATERIAL_DATA_SIZE], const glm::vec3& albedo, const glm::vec3& emission, float32 fuzz, float32 refIdx);
+void makeMaterial(float32 data[MATERIAL_DATA_SIZE], const glm::vec3& albedo, const glm::vec3& emission, float32 roughness, float32 metallic, float32 translucent, float32 ior);
 
 struct BSDFSample {
     glm::vec3 wi;
-    glm::vec3 weight;
-    float32 pdf;
-    bool delta = false;
-    bool valid = false;
+    bool translucent = false;
 };
 
-glm::vec3 evalMaterial(int32 type, const float32 data[MATERIAL_DATA_SIZE], const glm::vec3& wi, const glm::vec3& wo, const HitRecord& hit);
-float32 pdfMaterial(int32 type, const glm::vec3& wi, const glm::vec3& wo, const HitRecord& hit);
-BSDFSample sampleMaterial(int32 type, util::PCG32& rng, const glm::vec3& wo, const HitRecord& hit);
+BSDFSample sampleMaterial(util::PCG32& rng, float32 data[MATERIAL_DATA_SIZE], const HitRecord& hit, const glm::vec3& wo);
+glm::vec3 evalMaterial(float32 data[MATERIAL_DATA_SIZE], const BSDFSample& s, const HitRecord& hit, const glm::vec3& wo, const glm::vec3& wi);
+float32 pdfMaterial(const BSDFSample& s, const HitRecord& hit, const glm::vec3& wi);
 
 } // namespace core
 

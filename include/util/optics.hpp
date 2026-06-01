@@ -16,7 +16,7 @@ inline glm::vec3 diffuse(PCG32& rng, const glm::vec3& normal) {
     return randomCosineHemisphere(rng, normal);
 }
 
-inline glm::vec3 reflect(PCG32& rng, const glm::vec3& v, const glm::vec3& normal) {
+inline glm::vec3 reflect(const glm::vec3& v, const glm::vec3& normal) {
     return v - 2.0f * glm::dot(v, normal) * normal;
 }
 
