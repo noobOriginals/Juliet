@@ -8,7 +8,7 @@
 #include "cu/cuda_vec3.cuh"
 
 #define OBJECT_DATA_SIZE 12
-#define MATERIAL_DATA_SIZE 4
+#define MATERIAL_DATA_SIZE 5
 
 namespace cu {
 

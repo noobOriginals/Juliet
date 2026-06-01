@@ -58,7 +58,8 @@ vec3 raytrace(const core::Scene& scene, const core::Ray& ray, int32 maxDepth) {
 }
 
 #define aabbData(r, c) c - vec3(r * 0.5f), c + vec3(r * 0.5f)
-#define obbData(r, c, rot) c - vec3(r * 0.5f), c + vec3(r * 0.5f), vec3(glm::rotate(glm::mat4(1.0f), (float32) util::degToRad(rot), vec3(0, 1, 0)) * vec4(1.0f, 0.0f, 0.0f, 1.0f)), vec3(0.0f, 1.0f, 0.0f)
+#define obbData(r, c, rot) c - r, c + vec3(r * 0.5f), vec3(rotate(mat4(1.0f), (float32) util::degToRad(rot), vec3(0, 1, 0)) * vec4(1.0f, 0.0f, 0.0f, 1.0f)), vec3(0.0f, 1.0f, 0.0f)
+#define obbData2(r, c, rot) c - r, c + vec3(r * 0.5f), vec3(rotate(mat4(1.0f), (float32) util::degToRad(rot), normalize(vec3(1, 1, 1))) * vec4(1.0f, 0.0f, 0.0f, 1.0f)), vec3(0.0f, 1.0f, 0.0f)
 
 int main() {
     core::Scene scn = core::loadSceneFromFile("scenes/cornell.scn");
@@ -66,10 +67,24 @@ int main() {
         return 1;
     }
 
+    scn.objects.push_back(core::makeOBB(obbData(vec3(2.0f, 3.5f, 2.0f), vec3(-2.0f, -1.0f, 0.5f), 30.0f), 5));
+    scn.objects.push_back(core::makeSphere(vec3(2.0f, -3.0f, -1.0f), 2.0f, 6));
+    scn.objects.push_back(core::makeQuad(vec3(-1.0f, -4.99f, 0.5f), vec3(-1.5f, 0.0f, 1.5f), vec3(1.5f, 0.0f, 1.5f), 7));
+    scn.objects.push_back(core::makeOBB(obbData2(vec3(1.5f, 1.5f, 1.5f), vec3(3.0f, 2.0f, 0.0f), -40.0f), 8));
+    scn.objects.push_back(core::makeSphere(vec3(-3.0f, 2.7f, 1.0f), 1.5f, 9));
+    scn.objects.push_back(core::makeSphere(vec3(3.8f, -4.4f, 1.6f), 0.6f, 10));
+
+    scn.materials.push_back(core::makeDielectric(vec3(1.0f), 1.5f, 0.0f));
+    scn.materials.push_back(core::makeMetal(vec3(0.816f, 0.71f, 0.929f), 0.08f));
+    scn.materials.push_back(core::makeEmissive(vec3(0.447f, 0.922f, 0.8f)));
+    scn.materials.push_back(core::makeDielectric(vec3(1.0f), 1.5f, 0.5f));
+    scn.materials.push_back(core::makeDielectric(vec3(1.0f), 1.5f, 0.15f));
+    scn.materials.push_back(core::makeDiffuse(vec3(0.808f, 0.929f, 0.149f)));
+
     lib::RenderParameters renderParameters;
 
-    renderParameters.screenWidth = 1440;
-    renderParameters.screenHeight = 1440;
+    renderParameters.screenWidth = 1000;
+    renderParameters.screenHeight = 1000;
     renderParameters.vfov = 25.0f;
 
     renderParameters.worldUp = vec3(0, 1, 0);

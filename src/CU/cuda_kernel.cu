@@ -373,8 +373,8 @@ __device__ ScatterResult scatterDiffuse(PCG32& rng, const Ray& ray, const HitRec
     ScatterResult res;
     res.albedo = vec3(data[0], data[1], data[2]);
     res.scattered = true;
-    res.ray.org = hit.p;
     res.ray.dir = normalize(diffuse(rng, hit.n));
+    res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }
 
@@ -382,8 +382,8 @@ __device__ ScatterResult scatterMetal(PCG32& rng, const Ray& ray, const HitRecor
     ScatterResult res;
     res.albedo = vec3(data[0], data[1], data[2]);
     res.scattered = true;
-    res.ray.org = hit.p;
     res.ray.dir = normalize(reflect(rng, ray.dir, hit.n) + randomUV(rng) * data[3]);
+    res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }
 
@@ -391,14 +391,14 @@ __device__ ScatterResult scatterDielectric(PCG32& rng, const Ray& ray, const Hit
     ScatterResult res;
     res.albedo = vec3(data[0], data[1], data[2]);
     res.scattered = true;
-    res.ray.org = hit.p;
     float32 n1 = 1.0f, n2 = data[3];
     if (hit.exit) {
         float32 tmp = n1;
         n1 = n2;
         n2 = tmp;
     }
-    res.ray.dir = normalize(refract(rng, ray.dir, hit.n, n1, n2));
+    res.ray.dir = normalize(refract(rng, ray.dir, hit.n, n1, n2)  + randomUV(rng) * data[4]);
+    res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }
 
@@ -503,9 +503,9 @@ __global__ void kernel(
             emission = vec3(0.0f);
             if (mat.type == EMISSIVE) {
                 emission = sres.albedo;
+            } else {
+                throughput *= sres.albedo;
             }
-
-            throughput *= sres.albedo;
             radiance += emission * throughput;
 
             ray = sres.ray;

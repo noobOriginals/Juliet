@@ -25,13 +25,14 @@ Material makeMetal(const glm::vec3& albedo, float32 fuzz) {
     return mat;
 }
 
-Material makeDielectric(const glm::vec3& albedo, float32 refIdx) {
+Material makeDielectric(const glm::vec3& albedo, float32 refIdx, float32 frost) {
     Material mat;
     mat.type = DIELECTRIC;
     mat.data[0] = albedo.x;
     mat.data[1] = albedo.y;
     mat.data[2] = albedo.z;
     mat.data[3] = refIdx;
+    mat.data[4] = frost;
     return mat;
 }
 

@@ -4,7 +4,7 @@ Juliet's goal is to implement a solid path tracing engine from scratch, just lik
 
 ## Current scene  
 
-![scene](https://drive.google.com/uc?id=1wDH8obYCuopKQsuJ54PIH_o-0HSiHekV)
+![scene](https://drive.google.com/uc?id=1chJ7geBGDhdNhvTAULrGgsMv34o8BgIc)
 
 ## How to run  
 
@@ -24,4 +24,4 @@ Juliet's goal is to implement a solid path tracing engine from scratch, just lik
 
 Juliet's predecessors are **[Pathtraced](https://github.com/noobOriginals/Pathtraced)**, the first path tracer that I implemented, and **[Angela](https://github.com/noobOriginals/Angela)** (which was implemented with Claude's help). This project builds on what was learned from the previous two.  
 
-Using **[GLM](https://github.com/g-truc/glm)** and **[STB Image](https://github.com/nothings/stb)**.
+Using **[GLM](https://github.com/g-truc/glm)** and **[STB](https://github.com/nothings/stb)**.

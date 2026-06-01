@@ -11,7 +11,7 @@
 
 namespace core {
 
-constexpr uint64 MATERIAL_DATA_SIZE = 4;
+constexpr uint64 MATERIAL_DATA_SIZE = 5;
 
 enum MaterialType : int32 {
     DIFFUSE = 0,
@@ -27,7 +27,7 @@ struct Material {
 
 Material makeDiffuse(const glm::vec3& albedo);
 Material makeMetal(const glm::vec3& albedo, float32 fuzz);
-Material makeDielectric(const glm::vec3& albedo, float32 refIdx);
+Material makeDielectric(const glm::vec3& albedo, float32 refIdx, float32 frost);
 Material makeEmissive(const glm::vec3& albedo);
 
 struct ScatterResult {
