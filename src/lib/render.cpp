@@ -7,13 +7,12 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <chrono>
 
 // Local includes
 #include <util/util.hpp>
 
-#ifdef __APPLE__
 #include "gpu/gpu_render.hpp"
-#endif
 
 using namespace glm;
 
@@ -56,8 +55,20 @@ Render::Render(RenderParameters params) {
 void Render::renderScene(const core::Scene& scene) const {
     std::cout << "Rendering " << screenW << " x " << screenH << " / " << tileSize << " @SPP " << samplesPerPixel << "\n";
 
+    auto startTime = std::chrono::high_resolution_clock::now();
+    bool done = false;
+
     if (useGPU) {
-    #ifdef __APPLE__
+        auto monitor = [&]() {
+            while (!done) {
+                std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - startTime;
+                std::printf("\rElapsed time: %7.2fs", elapsed.count() / 1000);
+                std::fflush(stdout);
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
+        };
+        std::thread monitorThread(monitor);
+
         gpu::GPURenderParams gpuParams;
         gpuParams.screenW = screenW;
         gpuParams.screenH = screenH;
@@ -77,10 +88,10 @@ void Render::renderScene(const core::Scene& scene) const {
             }
             pixels[i] = makePixel(util::clamp(color, 0.0f, 1.0f));
         }
+        done = true;
+        monitorThread.join();
+        std::printf("\n");
         return;
-    #else
-        std::cout << "GPU not available. Defaulting to CPU multithreading.";
-    #endif
     }
 
 
@@ -143,6 +154,7 @@ void Render::renderScene(const core::Scene& scene) const {
     for (auto& t : threads) {
         t.join();
     }
+    done = true;
     std::printf("\n");
 }
 

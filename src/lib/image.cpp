@@ -1,7 +1,7 @@
 #include <lib/image.hpp>
 
 // Lib includes
-#include <stb_image/stb_image_write.h>
+#include <stb/stb_image_write.h>
 
 namespace lib {
 

@@ -1,10 +1,6 @@
 #ifndef GPU_RENDER_HPP
 #define GPU_RENDER_HPP
 
-#ifndef __APPLE__
-#error "This header is only available for MacOS."
-#endif // __APPLE__
-
 // Std includes
 #include <vector>
 
