@@ -26,7 +26,7 @@ struct Material {
 };
 
 Material makeDiffuse(const glm::vec3& albedo);
-Material makeMetal(const glm::vec3& albedo, float32 fuzz);
+Material makeMetal(const glm::vec3& albedo, float32 fuzz, float32 metallic);
 Material makeDielectric(const glm::vec3& albedo, float32 refIdx, float32 frost);
 Material makeEmissive(const glm::vec3& albedo);
 

@@ -12,16 +12,19 @@ Material makeDiffuse(const glm::vec3& albedo) {
     mat.data[0] = albedo.x;
     mat.data[1] = albedo.y;
     mat.data[2] = albedo.z;
+    mat.data[3] = 0.0f;
+    mat.data[4] = 0.0f;
     return mat;
 }
 
-Material makeMetal(const glm::vec3& albedo, float32 fuzz) {
+Material makeMetal(const glm::vec3& albedo, float32 fuzz, float32 metallic) {
     Material mat;
     mat.type = METAL;
     mat.data[0] = albedo.x;
     mat.data[1] = albedo.y;
     mat.data[2] = albedo.z;
     mat.data[3] = fuzz;
+    mat.data[4] = metallic;
     return mat;
 }
 
@@ -42,6 +45,8 @@ Material makeEmissive(const glm::vec3& albedo) {
     mat.data[0] = albedo.x;
     mat.data[1] = albedo.y;
     mat.data[2] = albedo.z;
+    mat.data[3] = 0.0f;
+    mat.data[4] = 0.0f;
     return mat;
 }
 
