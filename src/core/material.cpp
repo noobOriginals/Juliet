@@ -54,8 +54,8 @@ ScatterResult scatterDiffuse(const Ray& ray, const HitRecord& hit, const float32
     ScatterResult res;
     res.albedo = glm::vec3(data[0], data[1], data[2]);
     res.scattered = true;
-    res.ray.org = hit.p;
     res.ray.dir = util::diffuse(hit.n);
+    res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }
 
@@ -63,8 +63,12 @@ ScatterResult scatterMetal(const Ray& ray, const HitRecord& hit, const float32 d
     ScatterResult res;
     res.albedo = glm::vec3(data[0], data[1], data[2]);
     res.scattered = true;
-    res.ray.org = hit.p;
-    res.ray.dir = glm::normalize(util::reflect(ray.dir, hit.n) + util::randomUV() * data[3]);
+    if ((1.0f - data[4]) * abs(dot(ray.dir, hit.n)) < util::randomUnit()) {
+        res.ray.dir = normalize(reflect(ray.dir, hit.n) + util::randomUV() * data[3]);
+    } else {
+        res.ray.dir = util::diffuse(hit.n);
+    }
+    res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }
 
@@ -72,14 +76,14 @@ ScatterResult scatterDielectric(const Ray& ray, const HitRecord& hit, const floa
     ScatterResult res;
     res.albedo = glm::vec3(data[0], data[1], data[2]);
     res.scattered = true;
-    res.ray.org = hit.p;
     float32 n1 = 1.0f, n2 = data[3];
     if (hit.exit) {
         float32 tmp = n1;
         n1 = n2;
         n2 = tmp;
     }
-    res.ray.dir = glm::normalize(util::refract(ray.dir, hit.n, n1, n2));
+    res.ray.dir = glm::normalize(util::refract(ray.dir, hit.n, n1, n2) + util::randomUV() * data[4]);
+    res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }
 

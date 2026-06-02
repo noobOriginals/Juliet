@@ -40,17 +40,18 @@ vec3 raytrace(const core::Scene& scene, const core::Ray& ray, int32 maxDepth) {
             break;
         }
 
-        vec3 emission(0.0f);
         sres = core::scatterMaterial(r, h, scene.materials[midx]);
-        if (scene.materials[midx].type == core::EMISSIVE) {
-            emission = sres.albedo;
-        }
 
         if (!sres.scattered) {
             break;
         }
 
-        throughput *= sres.albedo;
+        vec3 emission(0.0f);
+        if (scene.materials[midx].type == core::EMISSIVE) {
+            emission = sres.albedo;
+        } else {
+            throughput *= sres.albedo;
+        }
         radiance += emission * throughput;
 
         r = sres.ray;
