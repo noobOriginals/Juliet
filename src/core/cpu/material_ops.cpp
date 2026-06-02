@@ -36,7 +36,11 @@ BSDFSample sampleMaterial(util::PCG32& rng, float32 data[MATERIAL_DATA_SIZE], co
         s.wi = glm::normalize(util::refract(rng, wo, hit.n, n1, n2) + util::randomUV(rng) * data[MAT_ROUGHNESS]);
         return s;
     }
-    s.wi = glm::normalize(glm::normalize(hit.n * data[MAT_SPECULAR] + util::reflect(wo, hit.n) * (1.0f - data[MAT_SPECULAR])) + util::randomUV(rng)) * data[MAT_ROUGHNESS];
+    if (data[MAT_METALLIC] * glm::dot(wo, hit.n) < util::nextFloat(rng)) {
+        s.wi = glm::normalize(util::reflect(wo, hit.n) + util::randomUV(rng));
+    } else {
+        s.wi = util::diffuse(rng, hit.n);
+    }
     return s;
 }
 
@@ -49,7 +53,7 @@ glm::vec3 evalMaterial(float32 data[MATERIAL_DATA_SIZE], const BSDFSample& s, co
             return glm::vec3(1.0f);
         }
     }
-    return color * (1.0f - data[MAT_METALLIC]) + glm::vec3(data[MAT_METALLIC]);
+    return color;
 }
 
 float32 pdfMaterial(const BSDFSample& s, const HitRecord& hit, const glm::vec3& wi) {

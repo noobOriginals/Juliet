@@ -21,13 +21,6 @@ const uint64 MAT_ABSORBTION = 11;
 
 const uint64 MATERIAL_DATA_SIZE = 12;
 
-enum MaterialType : int32 {
-    INVALID = 0,
-    DIFFUSE = 1,
-    METAL = 2,
-    DIELECTRIC = 3
-};
-
 } // namespace core
 
 #endif // CORE_MATERIAL_HPP
