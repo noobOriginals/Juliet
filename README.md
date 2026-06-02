@@ -10,8 +10,8 @@ Juliet's goal is to implement a solid path tracing engine from scratch, just lik
 
 - Clone this repo, make sure to have CMake installed.  
 - Create a folder (anywhere on your computer) where you place the following files:  
-  - A **"stb_image"** folder that contains **[stb_image_write.h](https://github.com/nothings/stb/blob/master/stb_image_write.h)**.
-  - **"[glm](https://github.com/g-truc/glm/tree/master/glm)"** folder (from the provided link, that exact directory). Download the repo zip (or clone), unpack and copy the **"glm"** folder from the repo to the directory you just created.  
+  - A **"stb"** folder that contains **[stb_image_write.h](https://github.com/nothings/stb/blob/master/stb_image_write.h)**. Or just clone the [stb](https://github.com/nothings/stb) repo and add that under your OPENGL_PATH.
+  - A **"[glm](https://github.com/g-truc/glm/tree/master/glm)"** folder (from the provided link, that exact directory). Download the repo zip (or clone), unpack and copy the **"glm"** folder from the repo to the directory you just created.  
 
 - Create an **Environment Variable** named **OPENGL_PATH** (don't ask) with the value being the path to the newly created folder.  
   - On MacOS/Linux: `export OPENGL_PATH="path/to/folder"` or add to your `.bashrc`, `.zshrc`, etc, then `source ~/.bashrc`
