@@ -60,7 +60,7 @@ vec3 raytrace(const core::Scene& scene, const core::Ray& ray, int32 maxDepth) {
 }
 
 #define aabbData(r, c) c - vec3(r * 0.5f), c + vec3(r * 0.5f)
-#define obbData(r, c, rot) c - r, c + vec3(r * 0.5f), vec3(rotate(mat4(1.0f), (float32) util::degToRad(rot), vec3(0.2, 1, 0.5)) * vec4(1.0f, 0.0f, 0.0f, 1.0f)), vec3(0.0f, 1.0f, 0.0f)
+#define obbData(r, c, rot) c - r, c + vec3(r * 0.5f), vec3(rotate(mat4(1.0f), (float32) util::degToRad(rot), vec3(0, 1, 0)) * vec4(1.0f, 0.0f, 0.0f, 1.0f)), vec3(0.0f, 1.0f, 0.0f)
 #define obbData2(r, c, rot) c - r, c + vec3(r * 0.5f), vec3(rotate(mat4(1.0f), (float32) util::degToRad(rot), normalize(vec3(1, 1, 1))) * vec4(1.0f, 0.0f, 0.0f, 1.0f)), vec3(0.0f, 1.0f, 0.0f)
 
 int main() {
@@ -70,7 +70,7 @@ int main() {
         return 1;
     }
 
-    scn.objects.push_back(core::makeOBB(obbData(vec3(2.0f, 3.5f, 2.0f), vec3(-2.0f, -1.0f, 0.5f), 25.0f), 5));
+    scn.objects.push_back(core::makeOBB(obbData(vec3(2.0f, 2.0f, 2.0f), vec3(-2.0f, -2.95f, 0.5f), 30.0f), 5));
     scn.objects.push_back(core::makeSphere(vec3(2.0f, -3.0f, -1.0f), 2.0f, 6));
     scn.objects.push_back(core::makeOBB(obbData2(vec3(1.5f, 1.5f, 1.5f), vec3(3.0f, 2.0f, 0.0f), -40.0f), 7));
     scn.objects.push_back(core::makeSphere(vec3(-3.0f, 2.7f, 1.0f), 1.5f, 8));
@@ -84,15 +84,15 @@ int main() {
 
     lib::RenderParameters renderParameters;
 
-    renderParameters.screenWidth = 1000;
-    renderParameters.screenHeight = 1000;
-    renderParameters.vfov = 25.0f;
+    renderParameters.screenWidth = 1170;
+    renderParameters.screenHeight = 2532;
+    renderParameters.vfov = 48.0f;
 
     renderParameters.worldUp = vec3(0, 1, 0);
     renderParameters.cameraPos = vec3(0.0f, 0.0f, 30.0f);
     renderParameters.cameraLookAt = vec3(0.0f, 0.0f, 0.0f);
 
-    renderParameters.samplesPerPixel = 1000;
+    renderParameters.samplesPerPixel = 200;
     renderParameters.maxBounces = 100;
     renderParameters.threadTileSize = 32;
 

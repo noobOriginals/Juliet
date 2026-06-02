@@ -92,7 +92,7 @@ float3 refract(thread PCG32& rng, thread const float3& dir, thread const float3&
         r = reflectance(cos, n1, n2);
     }
     if (r > nextFloat(rng)) {
-        return reflect(dir, normal);
+        return dir + 2.0f * cos * normal;
     }
     float3 perp = idx * (dir + cos * normal);
     float3 para = -sqrt(fabs(1.0f - dot(perp, perp))) * normal;
