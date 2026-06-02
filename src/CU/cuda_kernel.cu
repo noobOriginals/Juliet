@@ -1,4 +1,5 @@
 #include "cu/cuda_kernel.cuh"
+#include "util/random.hpp"
 
 #define UTIL_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286
 
@@ -68,7 +69,7 @@ __device__ vec3 diffuse(PCG32& rng, const vec3& normal) {
     return randomCosineHemisphere(rng, normal);
 }
 
-__device__ vec3 reflect(PCG32& rng, const vec3& v, const vec3& normal) {
+__device__ vec3 reflect(const vec3& v, const vec3& normal) {
     return v - 2.0f * dot(v, normal) * normal;
 }
 
@@ -382,8 +383,8 @@ __device__ ScatterResult scatterMetal(PCG32& rng, const Ray& ray, const HitRecor
     ScatterResult res;
     res.albedo = vec3(data[0], data[1], data[2]);
     res.scattered = true;
-    if (nextFloat(rng) < data[4] * abs(dot(ray.dir, hit.n))) {
-        res.ray.dir = normalize(reflect(rng, ray.dir, hit.n) + randomUV(rng) * data[3]);
+    if ((1.0f - data[4]) * abs(dot(ray.dir, hit.n)) < nextFloat(rng)) {
+        res.ray.dir = normalize(reflect(ray.dir, hit.n) + randomUV(rng) * data[3]);
     } else {
         res.ray.dir = normalize(diffuse(rng, hit.n));
     }
@@ -401,7 +402,7 @@ __device__ ScatterResult scatterDielectric(PCG32& rng, const Ray& ray, const Hit
         n1 = n2;
         n2 = tmp;
     }
-    res.ray.dir = normalize(refract(rng, ray.dir, hit.n, n1, n2)  + randomUV(rng) * data[4]);
+    res.ray.dir = normalize(refract(rng, ray.dir, hit.n, n1, n2) + randomUV(rng) * data[4]);
     res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }

@@ -77,7 +77,7 @@ int main() {
     scn.objects.push_back(core::makeSphere(vec3(3.8f, -4.4f, 1.6f), 0.6f, 9));
 
     scn.materials.push_back(core::makeDielectric(vec3(1.0f), 1.5f, 0.0f));
-    scn.materials.push_back(core::makeMetal(vec3(0.5f, 0.5f, 0.5f), 0.0f, 0.3f));
+    scn.materials.push_back(core::makeMetal(vec3(0.5f, 0.5f, 0.5f), 0.0f, 0.2f));
     scn.materials.push_back(core::makeDielectric(vec3(1.0f), 1.5f, 0.5f));
     scn.materials.push_back(core::makeDielectric(vec3(1.0f), 1.5f, 0.15f));
     scn.materials.push_back(core::makeDiffuse(vec3(0.808f, 0.929f, 0.149f)));
@@ -92,8 +92,8 @@ int main() {
     renderParameters.cameraPos = vec3(0.0f, 0.0f, 30.0f);
     renderParameters.cameraLookAt = vec3(0.0f, 0.0f, 0.0f);
 
-    renderParameters.samplesPerPixel = 100;
-    renderParameters.maxBounces = 20;
+    renderParameters.samplesPerPixel = 1000;
+    renderParameters.maxBounces = 100;
     renderParameters.threadTileSize = 32;
 
     renderParameters.enableSupersampling = true;

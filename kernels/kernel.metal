@@ -10,7 +10,7 @@ using namespace metal;
 
 #define EPSILON 1e-8f
 #define OBJECT_DATA_SIZE 12
-#define MATERIAL_DATA_SIZE 4
+#define MATERIAL_DATA_SIZE 5
 
 struct PCG32 {
     ulong state, inc;
@@ -76,10 +76,6 @@ float3 diffuse(thread PCG32& rng, thread const float3& normal) {
     return randomCosineHemisphere(rng, normal);
 }
 
-float3 reflect(thread PCG32& rng, thread const float3& v, thread const float3& normal) {
-    return v - 2.0f * dot(v, normal) * normal;
-}
-
 float reflectance(float cos, float n1, float n2) {
     float r0 = (n1 - n2) / (n1 + n2);
     r0 *= r0;
@@ -96,7 +92,7 @@ float3 refract(thread PCG32& rng, thread const float3& dir, thread const float3&
         r = reflectance(cos, n1, n2);
     }
     if (r > nextFloat(rng)) {
-        return reflect(rng, dir, normal);
+        return reflect(dir, normal);
     }
     float3 perp = idx * (dir + cos * normal);
     float3 para = -sqrt(fabs(1.0f - dot(perp, perp))) * normal;
@@ -397,7 +393,7 @@ ScatterResult scatterDiffuse(thread PCG32& rng, thread const Ray& ray, thread co
     ScatterResult res;
     res.albedo = float3(data[0], data[1], data[2]);
     res.scattered = true;
-    res.ray.dir = normalize(diffuse(rng, hit.n));
+    res.ray.dir = diffuse(rng, hit.n);
     res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }
@@ -406,7 +402,11 @@ ScatterResult scatterMetal(thread PCG32& rng, thread const Ray& ray, thread cons
     ScatterResult res;
     res.albedo = float3(data[0], data[1], data[2]);
     res.scattered = true;
-    res.ray.dir = normalize(reflect(rng, ray.dir, hit.n) + randomUV(rng) * data[3]);
+    if ((1.0f - data[4]) * abs(dot(ray.dir, hit.n)) < nextFloat(rng)) {
+        res.ray.dir = normalize(reflect(ray.dir, hit.n) + randomUV(rng) * data[3]);
+    } else {
+        res.ray.dir = diffuse(rng, hit.n);
+    }
     res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }
@@ -421,7 +421,7 @@ ScatterResult scatterDielectric(thread PCG32& rng, thread const Ray& ray, thread
         n1 = n2;
         n2 = tmp;
     }
-    res.ray.dir = normalize(refract(rng, ray.dir, hit.n, n1, n2));
+    res.ray.dir = normalize(refract(rng, ray.dir, hit.n, n1, n2) + randomUV(rng) * data[4]);
     res.ray.org = hit.p + res.ray.dir * 1e-4f;
     return res;
 }
@@ -529,10 +529,10 @@ kernel void render(
             emission = float3(0.0f);
             if (mat.type == EMISSIVE) {
                 emission = sres.albedo;
+            } else {
+                throughput *= sres.albedo;
             }
-
             radiance += emission * throughput;
-            throughput *= sres.albedo;
 
             ray = sres.ray;
         }
