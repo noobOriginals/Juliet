@@ -85,16 +85,16 @@ int main() {
 
     lib::RenderParameters renderParameters;
 
-    renderParameters.screenWidth = 1170;
-    renderParameters.screenHeight = 2532;
-    renderParameters.vfov = 48.0f;
+    renderParameters.screenWidth = 2160;
+    renderParameters.screenHeight = 2160;
+    renderParameters.vfov = 25.0f;
 
     renderParameters.worldUp = vec3(0, 1, 0);
     renderParameters.cameraPos = vec3(0.0f, 0.0f, 30.0f);
     renderParameters.cameraLookAt = vec3(0.0f, 0.0f, 0.0f);
 
-    renderParameters.samplesPerPixel = 200;
-    renderParameters.maxBounces = 100;
+    renderParameters.samplesPerPixel = 2000;
+    renderParameters.maxBounces = 40;
     renderParameters.threadTileSize = 32;
 
     renderParameters.enableSupersampling = true;

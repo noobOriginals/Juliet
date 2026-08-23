@@ -23,7 +23,7 @@ else()
     file(GLOB_RECURSE Sources CONFIGURE_DEPENDS "${SrcPath}/*.c" "${SrcPath}/*.cpp")
 endif()
 
-include_directories(${HeaderPath} $ENV{OPENGL_PATH})
+include_directories(${HeaderPath} $ENV{GLM_DIR} $ENV{STB_DIR})
 
 find_package(Threads REQUIRED)
 
